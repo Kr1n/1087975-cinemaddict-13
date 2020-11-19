@@ -1,20 +1,17 @@
-import {createSiteMenuTemplate, createSortTemplate} from "./view/menu.js";
+import {render} from "./utils.js";
+import {createMenuTemplate, createSortTemplate} from "./view/menu.js";
 import {createProfileTemplate} from "./view/profile.js";
 import {createFilmsList} from "./view/filmsList.js";
 import {createFooterStatisticsTemplate} from "./view/footer.js";
 
-const render = (container, template, place) => {
-  container.insertAdjacentHTML(place, template);
-};
+const headerElement = document.querySelector(`.header`);
+const mainElement = document.querySelector(`.main`);
+const footerStatisticsElement = document.querySelector(`.footer`);
 
-const siteHeaderElement = document.querySelector(`.header`);
-const siteMainElement = document.querySelector(`.main`);
-const siteFooterStatisticsElement = document.querySelector(`.footer`);
-
-render(siteHeaderElement, createProfileTemplate(), `beforeend`);
-render(siteMainElement, createSiteMenuTemplate(), `beforeend`);
-render(siteMainElement, createSortTemplate(), `beforeend`);
-render(siteMainElement, createFilmsList(), `beforeend`);
-render(siteFooterStatisticsElement, createFooterStatisticsTemplate(), `beforeend`);
+render(headerElement, createProfileTemplate(), `beforeend`);
+render(mainElement, createMenuTemplate(), `beforeend`);
+render(mainElement, createSortTemplate(), `beforeend`);
+render(mainElement, createFilmsList(), `beforeend`);
+render(footerStatisticsElement, createFooterStatisticsTemplate(), `beforeend`);
 
 
