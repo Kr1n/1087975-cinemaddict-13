@@ -10,6 +10,7 @@ Thumbs.db
 # Вспомогательные файлы
 *.log*
 node_modules/
+package-lock.json
 
 # Собранные файлы (допишите самостоятельно)
 public/bundle.js

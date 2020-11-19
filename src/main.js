@@ -1,4 +1,4 @@
-import {createSiteMenuTemplate, createSortTemplate, creatStatisticTemplate} from "./view/menu.js";
+import {createSiteMenuTemplate, createSortTemplate} from "./view/menu.js";
 import {createProfileTemplate} from "./view/profile.js";
 import {createFilmsList, createTopRatedFilmsList, createMostCommentedFilmsList} from "./view/filmsList.js";
 import {createFooterStatisticsTemplate} from "./view/footer.js";
