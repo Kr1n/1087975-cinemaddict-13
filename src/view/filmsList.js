@@ -15,7 +15,7 @@ export const createFilmsList = () => {
 
 const createContentFilmsList = () => {
 
-  let cardList = "";
+  let cardList = ``;
   for (let i = 0; i < CARD_COUNT; i++) {
     cardList += createFilmCardTemplate();
   }
@@ -30,7 +30,7 @@ const createContentFilmsList = () => {
 
 const createTopRatedFilmsList = () => {
 
-  let cardList = "";
+  let cardList = ``;
   for (let i = 0; i < EXTRA_CARD_COUNT; i++) {
     cardList += createFilmCardTemplate();
   }
@@ -45,7 +45,7 @@ const createTopRatedFilmsList = () => {
 
 const createMostCommentedFilmsList = () => {
 
-  let cardList = "";
+  let cardList = ``;
   for (let i = 0; i < EXTRA_CARD_COUNT; i++) {
     cardList += createFilmCardTemplate();
   }
