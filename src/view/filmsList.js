@@ -1,23 +1,23 @@
 import {createShowMoreTemplate} from "./showMore.js";
 import {createFilmCardTemplate} from "./filmCard.js";
 
-const CARD_COUNT = 5;
 const EXTRA_CARD_COUNT = 2;
+let allFilms = {};
 
-export const createFilmsList = () => {
+export const createFilmsList = (films = {}) => {
+  allFilms = films;
   return `
     <section class="films">` +
-    createContentFilmsList() +
-    createTopRatedFilmsList() +
-    createMostCommentedFilmsList() + `
+    createContentFilmsList(allFilms) +
+    createTopRatedFilmsList(allFilms.slice(0, EXTRA_CARD_COUNT)) +
+    createMostCommentedFilmsList(allFilms.slice(0, EXTRA_CARD_COUNT)) + `
     </section>`;
 };
 
-const createContentFilmsList = () => {
-
+const createContentFilmsList = (films) => {
   let cardList = ``;
-  for (let i = 0; i < CARD_COUNT; i++) {
-    cardList += createFilmCardTemplate();
+  for (let i = 0; i < films.length; i++) {
+    cardList += createFilmCardTemplate(films[i]);
   }
 
   return `
@@ -28,11 +28,11 @@ const createContentFilmsList = () => {
     </section>` + createShowMoreTemplate();
 };
 
-const createTopRatedFilmsList = () => {
+const createTopRatedFilmsList = (films = {}) => {
 
   let cardList = ``;
-  for (let i = 0; i < EXTRA_CARD_COUNT; i++) {
-    cardList += createFilmCardTemplate();
+  for (let i = 0; i < films.length; i++) {
+    cardList += createFilmCardTemplate(films[i]);
   }
 
   return `
@@ -43,11 +43,11 @@ const createTopRatedFilmsList = () => {
     </section>`;
 };
 
-const createMostCommentedFilmsList = () => {
+const createMostCommentedFilmsList = (films = {}) => {
 
   let cardList = ``;
-  for (let i = 0; i < EXTRA_CARD_COUNT; i++) {
-    cardList += createFilmCardTemplate();
+  for (let i = 0; i < films.length; i++) {
+    cardList += createFilmCardTemplate(films[i]);
   }
 
   return `
