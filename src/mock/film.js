@@ -1,11 +1,5 @@
 import dayjs from "dayjs";
-
-const getRandomInteger = (a = 0, b = 1) => {
-  const lower = Math.ceil(Math.min(a, b));
-  const upper = Math.floor(Math.max(a, b));
-
-  return Math.floor(lower + Math.random() * (upper - lower + 1));
-};
+import {getRandomInteger} from "../utils.js";
 
 const generateTitle = () => {
   const title = [
@@ -44,8 +38,8 @@ const generateWriters = () => {
   return writers.filter(() => getRandomInteger(0, 1)).join(`, `);
 };
 
-const generateCastMembers = () => {
-  const castMembers = [
+const generateActors = () => {
+  const actors = [
     `Джеки Чан`,
     `Одри Хепберн`,
     `Гари Олдмен`,
@@ -58,7 +52,7 @@ const generateCastMembers = () => {
     `Бред Пит`,
     `Кира Найтли`
   ];
-  return castMembers.filter(() => getRandomInteger(0, 1)).join(`, `);
+  return actors.filter(() => getRandomInteger(0, 1)).join(`, `);
 };
 
 const generateCountry = () => {
@@ -74,8 +68,9 @@ const generateCountry = () => {
   return country[getRandomInteger(0, country.length - 1)];
 };
 
-const generateGenre = () => {
-  const genre = [
+const generateGenres = () => {
+  const genresCount = getRandomInteger(1, 4);
+  const genres = [
     `Боевик`,
     `Мюзикл`,
     `Комедия`,
@@ -84,7 +79,7 @@ const generateGenre = () => {
     `Мелодрама`,
     `Фантастика`,
   ];
-  return genre[getRandomInteger(0, genre.length - 1)];
+  return new Set(new Array(genresCount).fill().map(() => genres[getRandomInteger(1, genres.length)]));
 };
 
 const generateAgeRating = () => {
@@ -117,15 +112,16 @@ const generateComments = () => {
 
 export const generateFilm = () => {
   return {
+    id: null,
     poster: `./images/posters/made-for-each-other.png`,
     title: generateTitle(),
     originalTitle: generateTitle(),
     rating: getRandomInteger(1, 10),
     director: generateDirector(),
     writers: generateWriters(),
-    castMembers: generateCastMembers(),
+    actors: generateActors(),
     country: generateCountry(),
-    genre: generateGenre(),
+    genres: generateGenres(),
     description: generateDescription(),
     ageRating: generateAgeRating(),
     duration: {
@@ -133,6 +129,9 @@ export const generateFilm = () => {
       minutes: getRandomInteger(0, 59)
     },
     releaseDate: dayjs().add(getRandomInteger(-1, -365 * 20), `day`),
-    comments: generateComments()
+    comments: generateComments(),
+    inWatchlist: Boolean(getRandomInteger(0, 1)),
+    isWatched: Boolean(getRandomInteger(0, 1)),
+    isFavorite: Boolean(getRandomInteger(0, 1))
   };
 };
