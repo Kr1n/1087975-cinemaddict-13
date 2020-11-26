@@ -1,6 +1,8 @@
 import dayjs from "dayjs";
 import {getRandomInteger} from "../utils.js";
 
+let currentId = 1;
+
 const generateText = () => {
   const text = [
     `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras aliquet varius magna, non porta ligula feugiat eget.`,
@@ -33,7 +35,7 @@ const generateEmoji = () => {
 
 export const generateComment = () => {
   return {
-    id: null,
+    id: currentId++,
     text: generateText(),
     author: generateAuthor(),
     date: dayjs().add(getRandomInteger(-1, -365 * 10), `day`),

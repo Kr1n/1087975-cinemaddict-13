@@ -1,4 +1,4 @@
-export const generateCommentsTemplate = (comments = {}) => {
+export const createCommentsTemplate = (comments = {}) => {
   const {} = comments;
 
   let commentsElements = ``;

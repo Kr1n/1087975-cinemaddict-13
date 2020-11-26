@@ -1,4 +1,4 @@
-import {render, getRandomInteger} from "./utils.js";
+import {render} from "./utils.js";
 import {generateFilm} from "./mock/film.js";
 import {generateComment} from "./mock/comment.js";
 import {createNavigationTemplate, createSortTemplate} from "./view/menu.js";
@@ -6,14 +6,14 @@ import {createProfileTemplate} from "./view/profile.js";
 import {createFilmsList} from "./view/filmsList.js";
 import {createFooterStatisticsTemplate} from "./view/footer.js";
 import {createFilmDetailsTemplate} from "./view/filmDetails.js";
-import {generateCommentsTemplate} from "./view/comments.js";
+import {createCommentsTemplate} from "./view/comments.js";
 import {createFilmCardTemplate} from "./view/filmCard.js";
 import {createShowMoreTemplate} from "./view/showMore.js";
 
 const FILM_COUNT = 6;
 const FILM_COUNT_STEP = 5;
+const COMMENTS_COUNT = 100;
 
-const COMMENTS_COUNT = getRandomInteger(0, 5);
 const films = new Array(FILM_COUNT).fill().map(generateFilm);
 const comments = new Array(COMMENTS_COUNT).fill().map(generateComment);
 
@@ -32,7 +32,7 @@ render(footerStatisticsElement, createFooterStatisticsTemplate(), `beforeend`);
 render(mainElement, createFilmDetailsTemplate(films[0]), `beforeend`);
 const commentsElement = document.querySelector(`.film-details__bottom-container`);
 if (commentsElement) {
-  render(commentsElement, generateCommentsTemplate(comments), `beforeend`);
+  render(commentsElement, createCommentsTemplate(comments.filter((item) => (films[0]).comments.has(item.id))), `beforeend`);
 }
 
 const details = document.querySelector(`.film-details`);
