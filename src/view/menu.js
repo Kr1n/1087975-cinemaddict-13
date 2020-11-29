@@ -1,20 +1,23 @@
 export const createNavigationTemplate = (films) => {
-  let favoriteCount = 0; let watchedCount = 0; let watchlistCount = 0;
+
+  let navigationLabelCounters = 0;
 
   if (films) {
-    films.forEach((film) => {
-      favoriteCount += film.isFavorite;
-      watchedCount += film.isWatched;
-      watchlistCount += film.inWatchlist;
+    navigationLabelCounters = films.reduce(({favorite = 0, watched = 0, watchlist = 0}, item) => {
+      return {
+        favorite: favorite + Number(item.isFavorite),
+        watched: watched + Number(item.isWatched),
+        watchlist: watchlist + Number(item.inWatchlist)
+      };
     });
   }
 
   return `<nav class="main-navigation">
     <div class="main-navigation__items">
       <a href="#all" class="main-navigation__item main-navigation__item--active">All movies</a>
-      <a href="#watchlist" class="main-navigation__item">Watchlist <span class="main-navigation__item-count">${watchlistCount}</span></a>
-      <a href="#history" class="main-navigation__item">History <span class="main-navigation__item-count">${watchedCount}</span></a>
-      <a href="#favorites" class="main-navigation__item">Favorites <span class="main-navigation__item-count">${favoriteCount}</span></a>
+      <a href="#watchlist" class="main-navigation__item">Watchlist <span class="main-navigation__item-count">${navigationLabelCounters.watchlist}</span></a>
+      <a href="#history" class="main-navigation__item">History <span class="main-navigation__item-count">${navigationLabelCounters.watched}</span></a>
+      <a href="#favorites" class="main-navigation__item">Favorites <span class="main-navigation__item-count">${navigationLabelCounters.favorite}</span></a>
     </div>
     <a href="#stats" class="main-navigation__additional">Stats</a>
   </nav>`;

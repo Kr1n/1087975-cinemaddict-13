@@ -2,16 +2,16 @@ export const createProfileTemplate = (films) => {
   let watchedCount = 0;
 
   if (films) {
-    films.forEach(({isWatched}) => (isWatched) ? watchedCount++ : watchedCount);
+    watchedCount = films.reduce((watched, item) => watched + Number(item.isWatched), 0);
   }
 
   return `<section class="header__profile profile">
-  <p class="profile__rating">${getRank(watchedCount)}</p>
+  <p class="profile__rating">${getRankLabel(watchedCount)}</p>
   <img class="profile__avatar" src="images/bitmap@2x.png" alt="Avatar" width="35" height="35">
 </section>`;
 };
 
-const getRank = (watchedCount = 0) => {
+const getRankLabel = (watchedCount = 0) => {
   if (watchedCount > 1 && watchedCount <= 10) {
     return `novice`;
   } else if (watchedCount > 10 && watchedCount <= 20) {

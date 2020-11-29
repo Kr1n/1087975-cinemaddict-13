@@ -1,18 +1,14 @@
 export const createCommentsTemplate = (comments = {}) => {
   const {} = comments;
 
-  let commentsElements = ``;
-
-  for (let comment of comments) {
-    const {text, author, date, emoji} = comment;
-
-    commentsElements += `
+  const commentReducer = (accumulator, {message, author, date, emoji}) => {
+    accumulator += `
       <li class="film-details__comment">
         <span class="film-details__comment-emoji">
           <img src="./images/emoji/${emoji}.png" width="55" height="55" alt="emoji-${emoji}">
         </span>
         <div>
-          <p class="film-details__comment-text">${text}</p>
+          <p class="film-details__comment-text">${message}</p>
           <p class="film-details__comment-info">
             <span class="film-details__comment-author">${author}</span>
             <span class="film-details__comment-day">${date.format(`DD/MM/YYYY HH:mm`)}</span>
@@ -21,7 +17,10 @@ export const createCommentsTemplate = (comments = {}) => {
         </div>
       </li>
     `;
-  }
+    return accumulator;
+  };
+
+  const commentsElements = comments.reduce(commentReducer, ``);
 
   return `<section class="film-details__comments-wrap">
         <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${comments.length}</span></h3>

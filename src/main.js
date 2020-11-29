@@ -11,7 +11,7 @@ import {createFilmCardTemplate} from "./view/filmCard.js";
 import {createShowMoreTemplate} from "./view/showMore.js";
 
 const FILM_COUNT = 6;
-const FILM_COUNT_STEP = 5;
+const FILM_SHOWMORE_COUNT = 5;
 const COMMENTS_COUNT = 100;
 
 const films = new Array(FILM_COUNT).fill().map(generateFilm);
@@ -21,7 +21,7 @@ const headerElement = document.querySelector(`.header`);
 const mainElement = document.querySelector(`.main`);
 const footerStatisticsElement = document.querySelector(`.footer`);
 
-let renderedFilmCount = FILM_COUNT_STEP;
+let renderedFilmCount = FILM_SHOWMORE_COUNT;
 
 render(headerElement, createProfileTemplate(films), `beforeend`);
 render(mainElement, createNavigationTemplate(films), `beforeend`);
@@ -29,10 +29,14 @@ render(mainElement, createSortTemplate(), `beforeend`);
 render(mainElement, createFilmsList(films, renderedFilmCount), `beforeend`);
 render(footerStatisticsElement, createFooterStatisticsTemplate(), `beforeend`);
 
-render(mainElement, createFilmDetailsTemplate(films[0]), `beforeend`);
+
+const filmForDetails = films[0];
+render(mainElement, createFilmDetailsTemplate(filmForDetails), `beforeend`);
 const commentsElement = document.querySelector(`.film-details__bottom-container`);
+const commentsForDetails = comments.filter((item) => (filmForDetails).comments.has(item.id));
+
 if (commentsElement) {
-  render(commentsElement, createCommentsTemplate(comments.filter((item) => (films[0]).comments.has(item.id))), `beforeend`);
+  render(commentsElement, createCommentsTemplate(commentsForDetails), `beforeend`);
 }
 
 const details = document.querySelector(`.film-details`);
@@ -40,7 +44,7 @@ const detailsCloseButton = details.querySelector(`.film-details__close-btn`);
 detailsCloseButton.addEventListener(`click`, () => details.remove());
 
 const filmListElement = mainElement.querySelector(`.films-list:not(.films-list--extra)`);
-if (films.length > FILM_COUNT_STEP) {
+if (films.length > FILM_SHOWMORE_COUNT) {
   render(filmListElement, createShowMoreTemplate(), `beforeend`);
 }
 const buttonShowMore = document.querySelector(`.films-list__show-more`);
@@ -50,10 +54,10 @@ if (buttonShowMore) {
     const filmContainerElement = mainElement.querySelector(`.films-list:not(.films-list--extra) .films-list__container`);
 
     films
-      .slice(renderedFilmCount, renderedFilmCount + FILM_COUNT_STEP)
+      .slice(renderedFilmCount, renderedFilmCount + FILM_SHOWMORE_COUNT)
       .forEach((film) => render(filmContainerElement, createFilmCardTemplate(film), `beforeend`));
 
-    renderedFilmCount += FILM_COUNT_STEP;
+    renderedFilmCount += FILM_SHOWMORE_COUNT;
 
     if (renderedFilmCount >= films.length) {
       buttonShowMore.remove();

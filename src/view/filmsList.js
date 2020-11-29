@@ -4,22 +4,26 @@ import {createFilmCardTemplate} from "./filmCard.js";
 const EXTRA_CARD_COUNT = 2;
 let allFilms = {};
 
+const sortForTopRated = (a, b) => b.rating - a.rating;
+const sortForMostCommented = (a, b) => b.comments.size - a.comments.size;
+
 export const createFilmsList = (films = {}, count) => {
   allFilms = films;
+
   return `
     <section class="films">` +
     createContentFilmsList(allFilms.slice(0, count)) +
-    createTopRatedFilmsList(allFilms.slice(0, EXTRA_CARD_COUNT)) +
-    createMostCommentedFilmsList(allFilms.slice(0, EXTRA_CARD_COUNT)) + `
+    createTopRatedFilmsList(allFilms.sort(sortForTopRated).slice(0, EXTRA_CARD_COUNT)) +
+    createMostCommentedFilmsList(allFilms.sort(sortForMostCommented).slice(0, EXTRA_CARD_COUNT)) + `
     </section>`;
 };
 
 const createContentFilmsList = (films) => {
 
-  let cardList = ``;
-  for (let i = 0; i < films.length; i++) {
-    cardList += createFilmCardTemplate(films[i]);
-  }
+  const cardList = films.reduce(
+      (accumulator, item) => accumulator + createFilmCardTemplate(item),
+      ``);
+
   return `
     <section class="films-list">
       <h2 class="films-list__title visually-hidden">All movies. Upcoming</h2>
@@ -29,10 +33,10 @@ const createContentFilmsList = (films) => {
 };
 
 const createTopRatedFilmsList = (films = {}) => {
-  let cardList = ``;
-  for (let i = 0; i < films.length; i++) {
-    cardList += createFilmCardTemplate(films[i]);
-  }
+
+  const cardList = films.reduce(
+      (accumulator, item) => accumulator + createFilmCardTemplate(item),
+      ``);
 
   return `
     <section class="films-list films-list--extra">
@@ -43,10 +47,10 @@ const createTopRatedFilmsList = (films = {}) => {
 };
 
 const createMostCommentedFilmsList = (films = {}) => {
-  let cardList = ``;
-  for (let i = 0; i < films.length; i++) {
-    cardList += createFilmCardTemplate(films[i]);
-  }
+
+  const cardList = films.reduce(
+      (accumulator, item) => accumulator + createFilmCardTemplate(item),
+      ``);
 
   return `
     <section class="films-list films-list--extra">

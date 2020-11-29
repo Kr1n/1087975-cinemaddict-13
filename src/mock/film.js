@@ -79,10 +79,10 @@ const generateGenres = () => {
     `Мелодрама`,
     `Фантастика`,
   ];
-  return new Set(new Array(genresCount).fill().map(() => genres[getRandomInteger(1, genres.length)]));
+  return new Set(new Array(genresCount).fill().map(() => genres[getRandomInteger(0, genres.length - 1)]));
 };
 
-const generateAgeRating = () => {
+const generateAgeLimit = () => {
   const ageRating = [
     `0+`,
     `6+`,
@@ -123,7 +123,7 @@ export const generateFilm = () => {
     country: generateCountry(),
     genres: generateGenres(),
     description: generateDescription(),
-    ageRating: generateAgeRating(),
+    ageLimit: generateAgeLimit(),
     duration: {
       hours: getRandomInteger(0, 2),
       minutes: getRandomInteger(0, 59)

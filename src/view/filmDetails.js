@@ -1,11 +1,10 @@
 
 export const createFilmDetailsTemplate = (film) => {
-  const {releaseDate, poster, ageRating, title, rating, director, writers, actors, duration: {hours, minutes}, country, genres, description, inWatchlist, isFavorite, isWatched} = film;
+  const {releaseDate, poster, ageLimit, title, rating, director, writers, actors, duration: {hours, minutes}, country, genres, description, inWatchlist, isFavorite, isWatched} = film;
 
-  let genresElement = ``;
-  for (const genre of genres) {
-    genresElement += `<span class="film-details__genre">` + genre + `</span>`;
-  }
+  const genresElement = Array.from(genres).reduce(
+      (accumulator, item) => accumulator + `<span class="film-details__genre">` + item + `</span>`,
+      ``);
 
   return `<section class="film-details">
   <form class="film-details__inner" action="" method="get">
@@ -17,7 +16,7 @@ export const createFilmDetailsTemplate = (film) => {
         <div class="film-details__poster">
           <img class="film-details__poster-img" src=${poster} alt="">
 
-            <p class="film-details__age">${ageRating}</p>
+            <p class="film-details__age">${ageLimit}</p>
         </div>
 
         <div class="film-details__info">
