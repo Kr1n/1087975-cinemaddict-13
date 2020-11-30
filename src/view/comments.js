@@ -1,4 +1,6 @@
-export const createCommentsTemplate = (comments = {}) => {
+import {createElement} from "../utils";
+
+const createCommentsTemplate = (comments = {}) => {
   const {} = comments;
 
   const commentReducer = (accumulator, {message, author, date, emoji}) => {
@@ -60,3 +62,26 @@ export const createCommentsTemplate = (comments = {}) => {
         </div>
       </section>`;
 };
+
+export default class Comments {
+  constructor(comments) {
+    this._coments = comments;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createCommentsTemplate(this._coments);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
