@@ -1,39 +1,42 @@
-import {createShowMoreTemplate} from "./showMore.js";
 import {createFilmCardTemplate} from "./filmCard.js";
 
-const CARD_COUNT = 5;
-const EXTRA_CARD_COUNT = 2;
 
-export const createFilmsList = () => {
+const EXTRA_CARD_COUNT = 2;
+let allFilms = {};
+
+const sortForTopRated = (a, b) => b.rating - a.rating;
+const sortForMostCommented = (a, b) => b.comments.size - a.comments.size;
+
+export const createFilmsList = (films = {}, count) => {
+  allFilms = films;
+
   return `
     <section class="films">` +
-    createContentFilmsList() +
-    createTopRatedFilmsList() +
-    createMostCommentedFilmsList() + `
+    createContentFilmsList(allFilms.slice(0, count)) +
+    createTopRatedFilmsList(allFilms.sort(sortForTopRated).slice(0, EXTRA_CARD_COUNT)) +
+    createMostCommentedFilmsList(allFilms.sort(sortForMostCommented).slice(0, EXTRA_CARD_COUNT)) + `
     </section>`;
 };
 
-const createContentFilmsList = () => {
+const createContentFilmsList = (films) => {
 
-  let cardList = "";
-  for (let i = 0; i < CARD_COUNT; i++) {
-    cardList += createFilmCardTemplate();
-  }
+  const cardList = films.reduce(
+      (accumulator, item) => accumulator + createFilmCardTemplate(item),
+      ``);
 
   return `
     <section class="films-list">
       <h2 class="films-list__title visually-hidden">All movies. Upcoming</h2>
       <div class="films-list__container">` + cardList + `
       </div>
-    </section>` + createShowMoreTemplate();
+    </section>`;
 };
 
-const createTopRatedFilmsList = () => {
+const createTopRatedFilmsList = (films = {}) => {
 
-  let cardList = "";
-  for (let i = 0; i < EXTRA_CARD_COUNT; i++) {
-    cardList += createFilmCardTemplate();
-  }
+  const cardList = films.reduce(
+      (accumulator, item) => accumulator + createFilmCardTemplate(item),
+      ``);
 
   return `
     <section class="films-list films-list--extra">
@@ -43,12 +46,11 @@ const createTopRatedFilmsList = () => {
     </section>`;
 };
 
-const createMostCommentedFilmsList = () => {
+const createMostCommentedFilmsList = (films = {}) => {
 
-  let cardList = "";
-  for (let i = 0; i < EXTRA_CARD_COUNT; i++) {
-    cardList += createFilmCardTemplate();
-  }
+  const cardList = films.reduce(
+      (accumulator, item) => accumulator + createFilmCardTemplate(item),
+      ``);
 
   return `
     <section class="films-list films-list--extra">
