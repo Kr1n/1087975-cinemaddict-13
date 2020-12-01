@@ -2,7 +2,11 @@ import {createElement} from "../utils";
 
 const createNavigationTemplate = (films) => {
 
-  let navigationLabelCounters = 0;
+  let navigationLabelCounters = {
+    favorite: 0,
+    watched: 0,
+    watchlist: 0
+  };
 
   if (films) {
     navigationLabelCounters = films.reduce(({favorite = 0, watched = 0, watchlist = 0}, item) => {

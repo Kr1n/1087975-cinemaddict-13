@@ -37,30 +37,12 @@ const renderMenu = () => {
 };
 
 const renderContent = () => {
-  const filmList = new FilmsList();
-  const showMoreBtn = new ShowMore();
-
   const sortForTopRated = (a, b) => b.rating - a.rating;
   const sortForMostCommented = (a, b) => b.comments.size - a.comments.size;
-
-  const contentFilms = new ContentFilms(films.slice(0, FILM_SHOWMORE_COUNT));
-  const mostCommentedFilms = new MostCommentedFilms(films.slice().sort(sortForMostCommented).slice(0, EXTRA_CARD_COUNT));
-  const topRatedFilms = new TopRatedFilms(films.slice().sort(sortForTopRated).slice(0, EXTRA_CARD_COUNT));
-
-  render(mainElement, filmList.getElement(), RenderPosition.BEFOREEND);
-  render(filmList.getElement(), contentFilms.getElement(), RenderPosition.BEFOREEND);
-  if (films.length > FILM_SHOWMORE_COUNT) {
-    render(filmList.getElement(), showMoreBtn.getElement(), RenderPosition.BEFOREEND);
-  }
-  render(filmList.getElement(), mostCommentedFilms.getElement(), RenderPosition.BEFOREEND);
-  render(filmList.getElement(), topRatedFilms.getElement(), RenderPosition.BEFOREEND);
-
   const onShowMoreBtnClicked = () => {
-    const filmContainerElement = mainElement.querySelector(`.films-list:not(.films-list--extra) .films-list__container`);
-
     films
       .slice(renderedFilmCount, renderedFilmCount + FILM_SHOWMORE_COUNT)
-      .forEach((film) => render(filmContainerElement, new FilmCard(film).getElement(), `beforeend`));
+      .forEach((film) => render(filmsList, new FilmCard(film).getElement(), RenderPosition.BEFOREEND));
 
     renderedFilmCount += FILM_SHOWMORE_COUNT;
 
@@ -69,6 +51,20 @@ const renderContent = () => {
       showMoreBtn.removeElement();
     }
   };
+
+  const filmsList = new FilmsList();
+  const showMoreBtn = new ShowMore();
+  const contentFilms = new ContentFilms(films.slice(0, FILM_SHOWMORE_COUNT));
+  const mostCommentedFilms = new MostCommentedFilms(films.slice().sort(sortForMostCommented).slice(0, EXTRA_CARD_COUNT));
+  const topRatedFilms = new TopRatedFilms(films.slice().sort(sortForTopRated).slice(0, EXTRA_CARD_COUNT));
+
+  render(mainElement, filmsList.getElement(), RenderPosition.BEFOREEND);
+  render(filmsList.getElement(), contentFilms.getElement(), RenderPosition.BEFOREEND);
+  if (films.length > FILM_SHOWMORE_COUNT) {
+    render(filmsList.getElement(), showMoreBtn.getElement(), RenderPosition.BEFOREEND);
+  }
+  render(filmsList.getElement(), mostCommentedFilms.getElement(), RenderPosition.BEFOREEND);
+  render(filmsList.getElement(), topRatedFilms.getElement(), RenderPosition.BEFOREEND);
 
   showMoreBtn.getElement().addEventListener(`click`, onShowMoreBtnClicked);
 };
