@@ -1,16 +1,17 @@
 import {createElement} from "../utils";
 
-const createFooterStatisticsTemplate = () => {
-  return `<p>130 291 movies inside</p>`;
+const createFooterStatisticsTemplate = (films = {}) => {
+  return `<p>${films.length ? films.length : 0 } movies inside</p>`;
 };
 
 export default class FooterStatistics {
-  constructor() {
+  constructor(films) {
+    this.films = films;
     this._element = null;
   }
 
   getTemplate() {
-    return createFooterStatisticsTemplate();
+    return createFooterStatisticsTemplate(this.films);
   }
 
   getElement() {

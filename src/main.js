@@ -13,8 +13,9 @@ import ShowMore from "./view/show-more.js";
 import TopRatedFilms from "./view/top-rated-films";
 import MostCommentedFilms from "./view/most-commented-films";
 import ContentFilms from "./view/content-films";
+import EmptyFilmList from "./view/empty-film-list";
 
-const FILM_COUNT = 14;
+const FILM_COUNT = 5;
 const FILM_SHOWMORE_COUNT = 5;
 const EXTRA_CARD_COUNT = 2;
 const COMMENTS_COUNT = 100;
@@ -31,6 +32,8 @@ let renderedFilmCount = FILM_SHOWMORE_COUNT;
 const filmsList = new FilmsList();
 const contentFilms = new ContentFilms();
 const showMoreBtn = new ShowMore();
+const navigation = new Navigation(films);
+const sort = new Sort();
 const popup = new Popup();
 
 const removePopup = () => {
@@ -66,14 +69,6 @@ const renderPopup = (film) => {
   const popupCloseButton = popup.getElement().querySelector(`.film-details__close-btn`);
   popupCloseButton.addEventListener(`click`, onPopupCloseButtonClick);
   document.addEventListener(`keydown`, onEscKeyDown);
-};
-
-const renderMenu = () => {
-  const navigation = new Navigation(films);
-  const sort = new Sort();
-
-  render(mainElement, navigation.getElement(), RenderPosition.BEFOREEND);
-  render(mainElement, sort.getElement(), RenderPosition.BEFOREEND);
 };
 
 const renderFilmCard = (film, place) => {
@@ -139,11 +134,16 @@ const renderMostCommented = () => {
 };
 
 
-render(headerElement, new Profile(films).getElement(), RenderPosition.BEFOREEND);
-renderMenu();
+render(mainElement, navigation.getElement(), RenderPosition.BEFOREEND);
 render(mainElement, filmsList.getElement(), RenderPosition.BEFOREEND);
-renderContent();
-renderShowMoreButton();
-renderTopRated();
-renderMostCommented();
-render(footerStatisticsElement, new FooterStatistics().getElement(), RenderPosition.BEFOREEND);
+if (films.length) {
+  render(headerElement, new Profile(films).getElement(), RenderPosition.BEFOREEND);
+  render(mainElement, sort.getElement(), RenderPosition.BEFOREEND);
+  renderContent();
+  renderShowMoreButton();
+  renderTopRated();
+  renderMostCommented();
+} else {
+  render(mainElement, new EmptyFilmList().getElement(), RenderPosition.BEFOREEND);
+}
+render(footerStatisticsElement, new FooterStatistics(films).getElement(), RenderPosition.BEFOREEND);

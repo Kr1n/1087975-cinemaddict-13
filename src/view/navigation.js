@@ -8,7 +8,7 @@ const createNavigationTemplate = (films) => {
     watchlist: 0
   };
 
-  if (films) {
+  if (films.length) {
     navigationLabelCounters = films.reduce(({favorite = 0, watched = 0, watchlist = 0}, item) => {
       return {
         favorite: favorite + Number(item.isFavorite),
