@@ -1,18 +1,22 @@
-import {render} from "./utils.js";
+import {render, RenderPosition} from "./utils.js";
 import {generateFilm} from "./mock/film.js";
 import {generateComment} from "./mock/comment.js";
 import Navigation from "./view/navigation.js";
 import Sort from "./view/sort.js";
 import Profile from "./view/profile.js";
-import FilmsList from "./view/filmsList.js";
+import FilmsList from "./view/films-list.js";
 import FooterStatistics from "./view/footer.js";
-import FilmDetails from "./view/filmDetails.js";
+import Popup from "./view/popup.js";
 import Comments from "./view/comments.js";
-import FilmCard from "./view/filmCard.js";
-import ShowMore from "./view/showMore.js";
+import FilmCard from "./view/film-card.js";
+import ShowMore from "./view/show-more.js";
+import TopRatedFilms from "./view/top-rated-films";
+import MostCommentedFilms from "./view/most-commented-films";
+import ContentFilms from "./view/content-films";
 
 const FILM_COUNT = 55;
 const FILM_SHOWMORE_COUNT = 5;
+const EXTRA_CARD_COUNT = 2;
 const COMMENTS_COUNT = 100;
 
 const films = new Array(FILM_COUNT).fill().map(generateFilm);
@@ -24,60 +28,83 @@ const footerStatisticsElement = document.querySelector(`.footer`);
 
 let renderedFilmCount = FILM_SHOWMORE_COUNT;
 
-render(headerElement, new Profile(films).getElement(), `beforeend`);
+const renderMenu = () => {
+  const navigation = new Navigation(films);
+  const sort = new Sort();
 
-const navigation = new Navigation(films).getElement();
-render(mainElement, navigation, `beforeend`);
-render(mainElement, new Sort().getElement(), `beforeend`);
-
-const filmList = new FilmsList(films, renderedFilmCount).getElement();
-
-render(mainElement, filmList, `beforeend`);
-render(footerStatisticsElement, new FooterStatistics().getElement(), `beforeend`);
-
-
-const filmForDetails = films[0];
-const details = new FilmDetails(filmForDetails);
-render(mainElement, details.getElement(), `beforeend`);
-
-const commentsElement = document.querySelector(`.film-details__bottom-container`);
-const commentsForDetails = comments.filter((item) => (filmForDetails).comments.has(item.id));
-if (commentsElement) {
-  render(commentsElement, new Comments(commentsForDetails).getElement(), `beforeend`);
-}
-
-const onEscKeyDown = (evt) => {
-  if (evt.key === `Escape` || evt.key === `Esc`) {
-    evt.preventDefault();
-    details.getElement().remove();
-    document.removeEventListener(`keydown`, onEscKeyDown);
-  }
+  render(mainElement, navigation.getElement(), RenderPosition.BEFOREEND);
+  render(mainElement, sort.getElement(), RenderPosition.BEFOREEND);
 };
 
-const detailsCloseButton = details.getElement().querySelector(`.film-details__close-btn`);
-detailsCloseButton.addEventListener(`click`, () => details.getElement().remove());
-document.addEventListener(`keydown`, onEscKeyDown);
+const renderContent = () => {
+  const filmList = new FilmsList();
+  const showMoreBtn = new ShowMore();
 
-const filmListElement = mainElement.querySelector(`.films-list:not(.films-list--extra)`);
-const showMoreBtn = new ShowMore();
+  const sortForTopRated = (a, b) => b.rating - a.rating;
+  const sortForMostCommented = (a, b) => b.comments.size - a.comments.size;
 
-if (films.length > FILM_SHOWMORE_COUNT) {
-  render(filmListElement, showMoreBtn.getElement(), `beforeend`);
-}
+  const contentFilms = new ContentFilms(films.slice(0, FILM_SHOWMORE_COUNT));
+  const mostCommentedFilms = new MostCommentedFilms(films.slice().sort(sortForMostCommented).slice(0, EXTRA_CARD_COUNT));
+  const topRatedFilms = new TopRatedFilms(films.slice().sort(sortForTopRated).slice(0, EXTRA_CARD_COUNT));
 
-showMoreBtn.getElement().addEventListener(`click`, () => {
-  const filmContainerElement = mainElement.querySelector(`.films-list:not(.films-list--extra) .films-list__container`);
+  render(mainElement, filmList.getElement(), RenderPosition.BEFOREEND);
+  render(filmList.getElement(), contentFilms.getElement(), RenderPosition.BEFOREEND);
+  if (films.length > FILM_SHOWMORE_COUNT) {
+    render(filmList.getElement(), showMoreBtn.getElement(), RenderPosition.BEFOREEND);
+  }
+  render(filmList.getElement(), mostCommentedFilms.getElement(), RenderPosition.BEFOREEND);
+  render(filmList.getElement(), topRatedFilms.getElement(), RenderPosition.BEFOREEND);
 
-  films
+  const onShowMoreBtnClicked = () => {
+    const filmContainerElement = mainElement.querySelector(`.films-list:not(.films-list--extra) .films-list__container`);
+
+    films
       .slice(renderedFilmCount, renderedFilmCount + FILM_SHOWMORE_COUNT)
       .forEach((film) => render(filmContainerElement, new FilmCard(film).getElement(), `beforeend`));
 
-  renderedFilmCount += FILM_SHOWMORE_COUNT;
+    renderedFilmCount += FILM_SHOWMORE_COUNT;
 
-  if (renderedFilmCount >= films.length) {
-    showMoreBtn.getElement().remove();
-    showMoreBtn.removeElement();
-  }
-});
+    if (renderedFilmCount >= films.length) {
+      showMoreBtn.getElement().remove();
+      showMoreBtn.removeElement();
+    }
+  };
 
+  showMoreBtn.getElement().addEventListener(`click`, onShowMoreBtnClicked);
+};
 
+const renderPopup = () => {
+  const filmForPopup = films[0];
+  const commentsForPopup = comments.filter((item) => (filmForPopup).comments.has(item.id));
+  const popup = new Popup(filmForPopup);
+
+  document.querySelector(`body`).classList.add(`hide-overflow`);
+  render(mainElement, popup.getElement(), RenderPosition.BEFOREEND);
+
+  const commentsElement = popup.getElement().querySelector(`.film-details__bottom-container`);
+  render(commentsElement, new Comments(commentsForPopup).getElement(), RenderPosition.BEFOREEND);
+
+  const popupCloseButton = popup.getElement().querySelector(`.film-details__close-btn`);
+  const onEscKeyDown = (evt) => {
+    if (evt.key === `Escape` || evt.key === `Esc`) {
+      evt.preventDefault();
+      popup.getElement().remove();
+      document.querySelector(`body`).classList.remove(`hide-overflow`);
+      document.removeEventListener(`keydown`, onEscKeyDown);
+    }
+  };
+  const onPopupCloseButtonClick = () => {
+    popup.getElement().remove();
+    document.querySelector(`body`).classList.remove(`hide-overflow`);
+  };
+
+  popupCloseButton.addEventListener(`click`, onPopupCloseButtonClick);
+  document.addEventListener(`keydown`, onEscKeyDown);
+};
+
+render(headerElement, new Profile(films).getElement(), RenderPosition.BEFOREEND);
+renderMenu();
+renderContent();
+render(footerStatisticsElement, new FooterStatistics().getElement(), RenderPosition.BEFOREEND);
+
+renderPopup();
