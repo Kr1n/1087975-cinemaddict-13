@@ -1,6 +1,6 @@
 import {createElement} from "../utils";
 
-const createFilmDetailsTemplate = (film) => {
+const createPopupTemplate = (film) => {
   const {releaseDate, poster, ageLimit, title, rating, director, writers, actors, duration: {hours, minutes}, country, genres, description, inWatchlist, isFavorite, isWatched} = film;
 
   const genresElement = Array.from(genres).reduce(
@@ -58,7 +58,7 @@ const createFilmDetailsTemplate = (film) => {
               <td class="film-details__cell">${country}</td>
             </tr>
             <tr class="film-details__row">
-              <td class="film-details__term">Genres</td>
+              <td class="film-details__term">${(genres.size > 1) ? `Genres` : `Genre`}</td>
               <td class="film-details__cell">${genresElement}</td>
             </tr>
           </table>
@@ -87,13 +87,22 @@ const createFilmDetailsTemplate = (film) => {
 };
 
 export default class Popup {
-  constructor(film) {
+
+  constructor(film = null) {
     this._film = film;
     this._element = null;
   }
 
+  get film() {
+    return this._film;
+  }
+
+  set film(newFilm) {
+    this._film = newFilm;
+  }
+
   getTemplate() {
-    return createFilmDetailsTemplate(this._film);
+    return createPopupTemplate(this._film);
   }
 
   getElement() {

@@ -1,27 +1,20 @@
 import {createElement} from "../utils.js";
-import FilmCard from "./film-card";
 
-const createTopRatedFilmsList = (films = {}) => {
-
-  const cardList = films.reduce(
-      (accumulator, item) => accumulator + (new FilmCard(item).getElement().outerHTML),
-      ``);
-
+const createTopRatedFilmsList = () => {
   return `<section class="films-list films-list--extra">
       <h2 class="films-list__title">Top rated</h2>
-      <div class="films-list__container">${cardList}
+      <div class="films-list__container">
       </div>
     </section>`;
 };
 
 export default class TopRatedFilms {
-  constructor(films) {
-    this._films = films;
+  constructor() {
     this._element = null;
   }
 
   getTemplate() {
-    return createTopRatedFilmsList(this._films);
+    return createTopRatedFilmsList();
   }
 
   getElement() {

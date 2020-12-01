@@ -1,9 +1,12 @@
 import {createElement} from "../utils";
 
-const createFilmCardTemplate = (film = {}) => {
-  const {title, rating, genre, releaseDate, poster, description, comments, duration: {hours, minutes}, isWatched, isFavorite, inWatchlist} = film;
+const createFilmCardTemplate = (film) => {
+  let template = ``;
+  if (film) {
+    const {title, rating, genre, releaseDate, poster, description, comments, duration: {hours, minutes}, isWatched, isFavorite, inWatchlist} = film;
+    let shortDescription = (description.length > 140) ? description.substring(0, 139) + `...` : description;
 
-  return `<article class="film-card">
+    template = `<article class="film-card">
       <h3 class="film-card__title">${title}</h3>
       <p class="film-card__rating">${rating}</p>
       <p class="film-card__info">
@@ -12,7 +15,7 @@ const createFilmCardTemplate = (film = {}) => {
         <span class="film-card__genre">${genre}</span>
       </p>
       <img src=${poster} alt="" class="film-card__poster">
-      <p class="film-card__description">${description}</p>
+      <p class="film-card__description">${shortDescription}</p>
       <a class="film-card__comments">${comments.size} comments</a>
       <div class="film-card__controls">
         <button class="film-card__controls-item button film-card__controls-item--add-to-watchlist ${inWatchlist ? `film-card__controls-item--active` : ``}" type="button">Add to watchlist</button>
@@ -20,6 +23,8 @@ const createFilmCardTemplate = (film = {}) => {
         <button class="film-card__controls-item button film-card__controls-item--favorite ${isFavorite ? `film-card__controls-item--active` : ``}" type="button">Mark as favorite</button>
       </div>
     </article>`;
+  }
+  return template;
 };
 
 export default class FilmCard {
@@ -38,6 +43,10 @@ export default class FilmCard {
     }
 
     return this._element;
+  }
+
+  get film() {
+    return this._film;
   }
 
   removeElement() {
