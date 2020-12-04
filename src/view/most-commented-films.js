@@ -1,4 +1,4 @@
-import {createElement} from "../utils.js";
+import {createElement} from "../utils";
 
 const createMostCommentedFilmsList = () => {
   return `<section class="films-list films-list--extra">

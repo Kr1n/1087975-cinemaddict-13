@@ -1,22 +1,18 @@
 import {createElement} from "../utils";
 
-const createNavigationTemplate = (films) => {
+const createNavigationTemplate = (films = []) => {
 
-  let navigationLabelCounters = {
-    favorite: 0,
-    watched: 0,
-    watchlist: 0
-  };
+  let navigationLabelCounters;
 
-  if (films.length) {
-    navigationLabelCounters = films.reduce(({favorite = 0, watched = 0, watchlist = 0}, item) => {
-      return {
-        favorite: favorite + Number(item.isFavorite),
-        watched: watched + Number(item.isWatched),
-        watchlist: watchlist + Number(item.inWatchlist)
-      };
-    });
-  }
+
+  navigationLabelCounters = films.reduce(({favorite = 0, watched = 0, watchlist = 0}, item) => {
+    return {
+      favorite: favorite + Number(item.isFavorite),
+      watched: watched + Number(item.isWatched),
+      watchlist: watchlist + Number(item.inWatchlist)
+    };
+  });
+
 
   return `<nav class="main-navigation">
     <div class="main-navigation__items">

@@ -88,7 +88,7 @@ const createPopupTemplate = (film) => {
 
 export default class Popup {
 
-  constructor(film = null) {
+  constructor(film) {
     this._film = film;
     this._element = null;
   }

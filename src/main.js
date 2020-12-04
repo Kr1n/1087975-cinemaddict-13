@@ -1,24 +1,21 @@
-import {render, RenderPosition} from "./utils.js";
-import {generateFilm} from "./mock/film.js";
-import {generateComment} from "./mock/comment.js";
-import Navigation from "./view/navigation.js";
-import Sort from "./view/sort.js";
-import Profile from "./view/profile.js";
-import FilmsList from "./view/films-list.js";
-import FooterStatistics from "./view/footer.js";
-import Popup from "./view/popup.js";
-import Comments from "./view/comments.js";
-import FilmCard from "./view/film-card.js";
-import ShowMore from "./view/show-more.js";
+import {FILM_COUNT, COMMENTS_COUNT, FILM_SHOWMORE_COUNT, EXTRA_CARD_COUNT} from "./consts";
+import {render, RenderPosition} from "./utils";
+import {generateFilm} from "./mock/film";
+import {generateComment} from "./mock/comment";
+import Navigation from "./view/navigation";
+import Sort from "./view/categories";
+import Profile from "./view/profile";
+import FilmsList from "./view/films-list";
+import FooterStatistics from "./view/footer";
+import Popup from "./view/popup";
+import Comments from "./view/comments";
+import FilmCard from "./view/film-card";
+import ShowMore from "./view/show-more";
 import TopRatedFilms from "./view/top-rated-films";
 import MostCommentedFilms from "./view/most-commented-films";
 import ContentFilms from "./view/content-films";
 import EmptyFilmList from "./view/empty-film-list";
 
-const FILM_COUNT = 5;
-const FILM_SHOWMORE_COUNT = 5;
-const EXTRA_CARD_COUNT = 2;
-const COMMENTS_COUNT = 100;
 
 const films = new Array(FILM_COUNT).fill().map(generateFilm);
 const comments = new Array(COMMENTS_COUNT).fill().map(generateComment);
