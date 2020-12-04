@@ -1,6 +1,8 @@
 import dayjs from "dayjs";
 import {getRandomInteger} from "../utils.js";
 
+let currentId = 1;
+
 const generateTitle = () => {
   const title = [
     `Бегущий по лезвию`,
@@ -112,7 +114,7 @@ const generateComments = () => {
 
 export const generateFilm = () => {
   return {
-    id: null,
+    id: currentId++,
     poster: `./images/posters/made-for-each-other.png`,
     title: generateTitle(),
     originalTitle: generateTitle(),

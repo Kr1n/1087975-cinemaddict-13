@@ -1,8 +1,14 @@
-export const createNavigationTemplate = (films) => {
+import {createElement} from "../utils";
 
-  let navigationLabelCounters = 0;
+const createNavigationTemplate = (films) => {
 
-  if (films) {
+  let navigationLabelCounters = {
+    favorite: 0,
+    watched: 0,
+    watchlist: 0
+  };
+
+  if (films.length) {
     navigationLabelCounters = films.reduce(({favorite = 0, watched = 0, watchlist = 0}, item) => {
       return {
         favorite: favorite + Number(item.isFavorite),
@@ -23,10 +29,26 @@ export const createNavigationTemplate = (films) => {
   </nav>`;
 };
 
-export const createSortTemplate = () => {
-  return `<ul class="sort">
-    <li><a href="#" class="sort__button sort__button--active">Sort by default</a></li>
-    <li><a href="#" class="sort__button">Sort by date</a></li>
-    <li><a href="#" class="sort__button">Sort by rating</a></li>
-  </ul>`;
-};
+
+export default class Navigation {
+  constructor(films) {
+    this._films = films;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createNavigationTemplate(this._films);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
