@@ -92,6 +92,8 @@ export default class Popup extends Abstract {
     super();
     this._film = film;
     this._comments = comments;
+
+    this._closeButtonHandler = this._closeButtonHandler.bind(this);
   }
 
   get film() {
@@ -120,5 +122,21 @@ export default class Popup extends Abstract {
     commentsContainer.appendChild(commentsElement.getElement());
 
     return super.getElement();
+  }
+
+  _closeButtonHandler(evt) {
+    evt.preventDefault();
+    this._callback.closeButtonClick();
+  }
+
+  setCloseButtonHandler(callback) {
+    this._callback.closeButtonClick = callback;
+    this.getElement().querySelector(`.film-details__close-btn`).addEventListener(`click`, this._closeButtonHandler);
+  }
+
+  removeElement() {
+    super.removeElement();
+    this.film = null;
+    this.comments = null;
   }
 }
