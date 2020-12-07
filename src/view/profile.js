@@ -1,11 +1,8 @@
 import {createElement} from "../utils";
 
-const createProfileTemplate = (films) => {
-  let watchedCount = 0;
-
-  if (films) {
-    watchedCount = films.reduce((watched, item) => watched + Number(item.isWatched), 0);
-  }
+const createProfileTemplate = (films = []) => {
+  const initialCount = 0;
+  const watchedCount = films.reduce((watched, item) => watched + Number(item.isWatched), initialCount);
 
   return `<section class="header__profile profile">
   <p class="profile__rating">${getRankLabel(watchedCount)}</p>

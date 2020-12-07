@@ -1,4 +1,5 @@
 import {createElement} from "../utils";
+import Comments from "./comments";
 
 const createPopupTemplate = (film) => {
   const {releaseDate, poster, ageLimit, title, rating, director, writers, actors, duration: {hours, minutes}, country, genres, description, inWatchlist, isFavorite, isWatched} = film;
@@ -88,8 +89,9 @@ const createPopupTemplate = (film) => {
 
 export default class Popup {
 
-  constructor(film) {
+  constructor(film, comments) {
     this._film = film;
+    this._comments = comments;
     this._element = null;
   }
 
@@ -101,6 +103,14 @@ export default class Popup {
     this._film = newFilm;
   }
 
+  get comments() {
+    return this._comments;
+  }
+
+  set comments(newComments) {
+    this._comments = newComments;
+  }
+
   getTemplate() {
     return createPopupTemplate(this._film);
   }
@@ -108,6 +118,9 @@ export default class Popup {
   getElement() {
     if (!this._element) {
       this._element = createElement(this.getTemplate());
+      const commentsContainer = this._element.querySelector(`.film-details__bottom-container`);
+      const commentsElement = new Comments(this._comments);
+      commentsContainer.appendChild(commentsElement.getElement());
     }
 
     return this._element;

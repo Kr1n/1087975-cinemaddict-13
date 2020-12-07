@@ -8,7 +8,7 @@ const createSortTemplate = () => {
   </ul>`;
 };
 
-export default class Categories {
+export default class SortButtons {
   constructor() {
     this._element = null;
   }
