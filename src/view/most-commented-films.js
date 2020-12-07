@@ -1,4 +1,4 @@
-import {createElement} from "../utils";
+import Abstract from "./abstract";
 
 const createMostCommentedFilmsList = () => {
   return `<section class="films-list films-list--extra">
@@ -8,24 +8,8 @@ const createMostCommentedFilmsList = () => {
     </section>`;
 };
 
-export default class MostCommentedFilms {
-  constructor() {
-    this._element = null;
-  }
-
+export default class MostCommentedFilms extends Abstract {
   getTemplate() {
     return createMostCommentedFilmsList();
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

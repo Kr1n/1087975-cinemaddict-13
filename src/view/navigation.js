@@ -1,4 +1,4 @@
-import {createElement} from "../utils";
+import Abstract from "./abstract";
 
 const createNavigationTemplate = (films = []) => {
 
@@ -29,25 +29,13 @@ const createNavigationTemplate = (films = []) => {
 };
 
 
-export default class Navigation {
+export default class Navigation extends Abstract {
   constructor(films) {
+    super();
     this._films = films;
-    this._element = null;
   }
 
   getTemplate() {
     return createNavigationTemplate(this._films);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

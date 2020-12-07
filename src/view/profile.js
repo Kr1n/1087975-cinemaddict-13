@@ -1,4 +1,4 @@
-import {createElement} from "../utils";
+import Abstract from "./abstract";
 
 const createProfileTemplate = (films = []) => {
   const initialCount = 0;
@@ -22,25 +22,13 @@ const getRankLabel = (watchedCount = 0) => {
   }
 };
 
-export default class Profile {
+export default class Profile extends Abstract {
   constructor(films) {
+    super();
     this._films = films;
-    this._element = null;
   }
 
   getTemplate() {
     return createProfileTemplate(this._films);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

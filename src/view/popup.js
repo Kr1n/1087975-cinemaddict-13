@@ -1,5 +1,5 @@
-import {createElement} from "../utils";
 import Comments from "./comments";
+import Abstract from "./abstract";
 
 const createPopupTemplate = (film) => {
   const {releaseDate, poster, ageLimit, title, rating, director, writers, actors, duration: {hours, minutes}, country, genres, description, inWatchlist, isFavorite, isWatched} = film;
@@ -87,12 +87,11 @@ const createPopupTemplate = (film) => {
 </section>`;
 };
 
-export default class Popup {
-
+export default class Popup extends Abstract {
   constructor(film, comments) {
+    super();
     this._film = film;
     this._comments = comments;
-    this._element = null;
   }
 
   get film() {
@@ -116,17 +115,10 @@ export default class Popup {
   }
 
   getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-      const commentsContainer = this._element.querySelector(`.film-details__bottom-container`);
-      const commentsElement = new Comments(this._comments);
-      commentsContainer.appendChild(commentsElement.getElement());
-    }
+    const commentsContainer = super.getElement().querySelector(`.film-details__bottom-container`);
+    const commentsElement = new Comments(this._comments);
+    commentsContainer.appendChild(commentsElement.getElement());
 
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
+    return super.getElement();
   }
 }
