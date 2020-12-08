@@ -1,4 +1,6 @@
-export const creatStatisticTemplate = () => {
+import Abstract from "./abstract";
+
+const creatStatisticTemplate = () => {
   return `<section class="statistic">
     <p class="statistic__rank">
       Your rank
@@ -46,3 +48,9 @@ export const creatStatisticTemplate = () => {
 
   </section>`;
 };
+
+export default class Statistic extends Abstract {
+  getTemplate() {
+    return creatStatisticTemplate();
+  }
+}

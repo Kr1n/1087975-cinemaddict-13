@@ -1,11 +1,8 @@
-import {createElement} from "../utils.js";
+import Abstract from "./abstract";
 
-const createProfileTemplate = (films) => {
-  let watchedCount = 0;
-
-  if (films) {
-    watchedCount = films.reduce((watched, item) => watched + Number(item.isWatched), 0);
-  }
+const createProfileTemplate = (films = []) => {
+  const initialCount = 0;
+  const watchedCount = films.reduce((watched, item) => watched + Number(item.isWatched), initialCount);
 
   return `<section class="header__profile profile">
   <p class="profile__rating">${getRankLabel(watchedCount)}</p>
@@ -25,25 +22,13 @@ const getRankLabel = (watchedCount = 0) => {
   }
 };
 
-export default class Profile {
+export default class Profile extends Abstract {
   constructor(films) {
+    super();
     this._films = films;
-    this._element = null;
   }
 
   getTemplate() {
     return createProfileTemplate(this._films);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

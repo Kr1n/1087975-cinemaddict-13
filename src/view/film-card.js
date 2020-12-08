@@ -1,4 +1,4 @@
-import {createElement} from "../utils";
+import Abstract from "./abstract";
 
 const createFilmCardTemplate = (film) => {
   let template = ``;
@@ -27,29 +27,31 @@ const createFilmCardTemplate = (film) => {
   return template;
 };
 
-export default class FilmCard {
+export default class FilmCard extends Abstract {
   constructor(film) {
+    super();
     this._film = film;
-    this._element = null;
+
+    this._clickPosterHandler = this._clickPosterHandler.bind(this);
   }
 
   getTemplate() {
     return createFilmCardTemplate(this._film);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
   get film() {
     return this._film;
   }
 
-  removeElement() {
-    this._element = null;
+  _clickPosterHandler(evt) {
+    evt.preventDefault();
+    this._callback.clickPoster();
+  }
+
+  setClickPosterHandler(callback) {
+    this._callback.clickPoster = callback;
+    this.getElement().querySelector(`.film-card__poster`).addEventListener(`click`, this._clickPosterHandler);
+    this.getElement().querySelector(`.film-card__title`).addEventListener(`click`, this._clickPosterHandler);
+    this.getElement().querySelector(`.film-card__comments`).addEventListener(`click`, this._clickPosterHandler);
   }
 }

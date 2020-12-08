@@ -1,4 +1,5 @@
-import {createElement} from "../utils";
+import Comments from "./comments";
+import Abstract from "./abstract";
 
 const createPopupTemplate = (film) => {
   const {releaseDate, poster, ageLimit, title, rating, director, writers, actors, duration: {hours, minutes}, country, genres, description, inWatchlist, isFavorite, isWatched} = film;
@@ -86,11 +87,13 @@ const createPopupTemplate = (film) => {
 </section>`;
 };
 
-export default class Popup {
-
-  constructor(film = null) {
+export default class Popup extends Abstract {
+  constructor(film, comments) {
+    super();
     this._film = film;
-    this._element = null;
+    this._comments = comments;
+
+    this._closeButtonHandler = this._closeButtonHandler.bind(this);
   }
 
   get film() {
@@ -101,19 +104,39 @@ export default class Popup {
     this._film = newFilm;
   }
 
+  get comments() {
+    return this._comments;
+  }
+
+  set comments(newComments) {
+    this._comments = newComments;
+  }
+
   getTemplate() {
     return createPopupTemplate(this._film);
   }
 
   getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
+    const commentsContainer = super.getElement().querySelector(`.film-details__bottom-container`);
+    const commentsElement = new Comments(this._comments);
+    commentsContainer.appendChild(commentsElement.getElement());
 
-    return this._element;
+    return super.getElement();
+  }
+
+  _closeButtonHandler(evt) {
+    evt.preventDefault();
+    this._callback.closeButtonClick();
+  }
+
+  setCloseButtonHandler(callback) {
+    this._callback.closeButtonClick = callback;
+    this.getElement().querySelector(`.film-details__close-btn`).addEventListener(`click`, this._closeButtonHandler);
   }
 
   removeElement() {
-    this._element = null;
+    super.removeElement();
+    this.film = null;
+    this.comments = null;
   }
 }

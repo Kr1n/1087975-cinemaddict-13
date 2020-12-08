@@ -1,4 +1,4 @@
-import {createElement} from "../utils";
+import Abstract from "./abstract";
 
 const createCommentsTemplate = (comments = {}) => {
   const {} = comments;
@@ -63,25 +63,13 @@ const createCommentsTemplate = (comments = {}) => {
       </section>`;
 };
 
-export default class Comments {
+export default class Comments extends Abstract {
   constructor(comments) {
+    super();
     this._coments = comments;
-    this._element = null;
   }
 
   getTemplate() {
     return createCommentsTemplate(this._coments);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
