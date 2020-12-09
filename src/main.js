@@ -12,7 +12,7 @@ import FilmCard from "./view/film-card";
 import ShowMore from "./view/show-more";
 import TopRatedFilms from "./view/top-rated-films";
 import MostCommentedFilms from "./view/most-commented-films";
-import ContentFilms from "./view/content-films";
+import AllFilms from "./view/all-films";
 import EmptyFilmList from "./view/empty-film-list";
 
 const films = new Array(FILM_COUNT).fill().map(generateFilm);
@@ -23,7 +23,7 @@ const mainContainer = document.querySelector(`.main`);
 const footerStatisticsContainer = document.querySelector(`.footer`);
 
 const filmsList = new FilmsList();
-const contentFilms = new ContentFilms();
+const allFilms = new AllFilms();
 const showMoreBtn = new ShowMore();
 const navigation = new Navigation(films);
 const sortButtons = new SortButtons();
@@ -55,7 +55,6 @@ const renderPopup = (film, popupComments) => {
 
   mainContainer.appendChild(popup.getElement());
   popup.setCloseButtonHandler(removePopup);
-  // Здесь случайно нет утечки памяти? Надо отписываться от события или достаточно удаления объекта?
 
   document.addEventListener(`keydown`, onEscKeyDown);
   document.querySelector(`body`).classList.add(`hide-overflow`);
@@ -74,9 +73,9 @@ const renderFilmCard = (film, place) => {
 };
 
 const renderContent = () => {
-  render(filmsList, contentFilms, RenderPosition.BEFOREEND);
+  render(filmsList, allFilms, RenderPosition.BEFOREEND);
   films.slice(0, FILM_SHOWMORE_COUNT).forEach((film) => {
-    renderFilmCard(film, contentFilms.getElement().querySelector(`.films-list__container`));
+    renderFilmCard(film, allFilms.getElement().querySelector(`.films-list__container`));
   });
 };
 
