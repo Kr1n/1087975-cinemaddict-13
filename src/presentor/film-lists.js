@@ -16,6 +16,7 @@ export default class FilmLists {
     this._filmListsContainer = filmListsContainer;
     this._renderedFilmCount = FILM_SHOWMORE_COUNT;
     this._filmCardPresenter = {};
+    this._renderedFilmCount = 0;
 
     this._sortButtons = new SortButtons();
     this._filmsList = new FilmsList();
@@ -91,9 +92,9 @@ export default class FilmLists {
       .slice(this._renderedFilmCount, this._renderedFilmCount + FILM_SHOWMORE_COUNT)
       .forEach((film) => this._renderFilmCard(film, this._filmsList.getElement().querySelector(`.films-list__container`)));
 
-    this.renderedFilmCount += FILM_SHOWMORE_COUNT;
+    this._renderedFilmCount += FILM_SHOWMORE_COUNT;
 
-    if (this.renderedFilmCount >= this._allFilms.length) {
+    if (this._renderedFilmCount >= this._allFilms.length) {
       remove(this._showMoreBtn);
     }
   }

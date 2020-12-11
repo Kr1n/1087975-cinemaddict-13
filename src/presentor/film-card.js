@@ -1,14 +1,15 @@
 import {remove, render, RenderPosition} from "../utils";
 import FilmCard from "../view/film-card";
-import Popup from "../view/popup";
+import {popup} from "../view/popup";
 
 export default class filmCard {
   constructor(container) {
     this._container = container;
-    this._popup = new Popup();
+    this._popup = popup;
 
     this._onEscKeyDown = this._onEscKeyDown.bind(this);
     this._onFilmCardClick = this._onFilmCardClick.bind(this);
+    this._closePopup = this._closePopup.bind(this);
   }
 
   init(film, comments) {
@@ -23,19 +24,18 @@ export default class filmCard {
   _onEscKeyDown(evt) {
     if (evt.key === `Escape` || evt.key === `Esc`) {
       evt.preventDefault();
-      this._removePopup();
+      this._closePopup();
       document.removeEventListener(`keydown`, this._onEscKeyDown);
     }
   }
 
   _onFilmCardClick() {
     const popupComments = this._comments.filter((item) => (this._film).comments.has(item.id));
-    this._removePopup();
+    this._closePopup();
     this._renderPopup(this._film, popupComments);
   }
 
-
-  _removePopup() {
+  _closePopup() {
     if (this._popup.film) {
       remove(this._popup);
     }
@@ -48,7 +48,7 @@ export default class filmCard {
     this._popup.comments = popupComments;
 
     this._container.appendChild(this._popup.getElement());
-    this._popup.setCloseButtonHandler(this._removePopup);
+    this._popup.setCloseButtonHandler(this._closePopup);
 
     document.addEventListener(`keydown`, this._onEscKeyDown);
     document.querySelector(`body`).classList.add(`hide-overflow`);

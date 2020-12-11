@@ -87,13 +87,22 @@ const createPopupTemplate = (film) => {
 </section>`;
 };
 
-export default class Popup extends Abstract {
-  constructor(film, comments) {
-    super();
-    this._film = film;
-    this._comments = comments;
+let instance = null;
 
+class PopupSingleton extends Abstract {
+  constructor() {
+    super();
+
+    this._film = null;
+    this._comments = null;
+    this._commentsElement = null;
+    this._commentsContainer = null;
     this._closeButtonHandler = this._closeButtonHandler.bind(this);
+  }
+
+  static getInstance() {
+    instance = instance || new PopupSingleton();
+    return instance;
   }
 
   get film() {
@@ -117,9 +126,12 @@ export default class Popup extends Abstract {
   }
 
   getElement() {
-    const commentsContainer = super.getElement().querySelector(`.film-details__bottom-container`);
-    const commentsElement = new Comments(this._comments);
-    commentsContainer.appendChild(commentsElement.getElement());
+    if (this._commentsContainer) {
+      this._commentsElement.removeElement();
+    }
+    this._commentsContainer = super.getElement().querySelector(`.film-details__bottom-container`);
+    this._commentsElement = new Comments(this._comments);
+    this._commentsContainer.appendChild(this._commentsElement.getElement());
 
     return super.getElement();
   }
@@ -140,3 +152,5 @@ export default class Popup extends Abstract {
     this.comments = null;
   }
 }
+
+export const popup = PopupSingleton.getInstance();
