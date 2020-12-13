@@ -98,6 +98,11 @@ class PopupSingleton extends Abstract {
     this._commentsElement = null;
     this._commentsContainer = null;
     this._closeButtonHandler = this._closeButtonHandler.bind(this);
+
+    this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
+    this._watchedClickHandler = this._watchedClickHandler.bind(this);
+    this._watchlistClickHandler = this._watchlistClickHandler.bind(this);
+
   }
 
   static getInstance() {
@@ -150,6 +155,33 @@ class PopupSingleton extends Abstract {
     super.removeElement();
     this.film = null;
     this.comments = null;
+  }
+
+  _favoriteClickHandler() {
+    this._callback.favoriteClick();
+  }
+
+  _watchedClickHandler() {
+    this._callback.watchedClickHandler();
+  }
+
+  _watchlistClickHandler() {
+    this._callback.watchlistClickHandler();
+  }
+
+  setFavoriteClickHandler(callback) {
+    this._callback.favoriteClick = callback;
+    this.getElement().querySelector(`.film-details__control-label--favorite`).addEventListener(`click`, this._favoriteClickHandler);
+  }
+
+  setWatchedClickHandler(callback) {
+    this._callback.watchedClickHandler = callback;
+    this.getElement().querySelector(`.film-details__control-label--watched`).addEventListener(`click`, this._watchedClickHandler);
+  }
+
+  setWatchlistClickHandler(callback) {
+    this._callback.watchlistClickHandler = callback;
+    this.getElement().querySelector(`.film-details__control-label--watchlist`).addEventListener(`click`, this._watchlistClickHandler);
   }
 }
 

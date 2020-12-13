@@ -3,7 +3,6 @@ import {render, RenderPosition} from "./utils";
 import {generateFilm} from "./mock/film";
 import {generateComment} from "./mock/comment";
 import Navigation from "./view/navigation";
-
 import Profile from "./view/profile";
 import FooterStatistics from "./view/footer";
 import FilmListsPesenter from "./presentor/film-lists";
