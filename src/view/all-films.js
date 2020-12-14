@@ -9,7 +9,7 @@ const createContentFilmsList = () => {
     </section>`;
 };
 
-export default class ContentFilms extends Abstract {
+export default class AllFilms extends Abstract {
   getTemplate() {
     return createContentFilmsList();
   }

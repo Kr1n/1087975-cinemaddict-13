@@ -87,13 +87,27 @@ const createPopupTemplate = (film) => {
 </section>`;
 };
 
-export default class Popup extends Abstract {
-  constructor(film, comments) {
-    super();
-    this._film = film;
-    this._comments = comments;
+let instance = null;
 
+class PopupSingleton extends Abstract {
+  constructor() {
+    super();
+
+    this._film = null;
+    this._comments = null;
+    this._commentsElement = null;
+    this._commentsContainer = null;
     this._closeButtonHandler = this._closeButtonHandler.bind(this);
+
+    this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
+    this._watchedClickHandler = this._watchedClickHandler.bind(this);
+    this._watchlistClickHandler = this._watchlistClickHandler.bind(this);
+
+  }
+
+  static getInstance() {
+    instance = instance || new PopupSingleton();
+    return instance;
   }
 
   get film() {
@@ -117,9 +131,12 @@ export default class Popup extends Abstract {
   }
 
   getElement() {
-    const commentsContainer = super.getElement().querySelector(`.film-details__bottom-container`);
-    const commentsElement = new Comments(this._comments);
-    commentsContainer.appendChild(commentsElement.getElement());
+    if (this._commentsContainer) {
+      this._commentsElement.removeElement();
+    }
+    this._commentsContainer = super.getElement().querySelector(`.film-details__bottom-container`);
+    this._commentsElement = new Comments(this._comments);
+    this._commentsContainer.appendChild(this._commentsElement.getElement());
 
     return super.getElement();
   }
@@ -139,4 +156,33 @@ export default class Popup extends Abstract {
     this.film = null;
     this.comments = null;
   }
+
+  _favoriteClickHandler() {
+    this._callback.favoriteClick();
+  }
+
+  _watchedClickHandler() {
+    this._callback.watchedClickHandler();
+  }
+
+  _watchlistClickHandler() {
+    this._callback.watchlistClickHandler();
+  }
+
+  setFavoriteClickHandler(callback) {
+    this._callback.favoriteClick = callback;
+    this.getElement().querySelector(`.film-details__control-label--favorite`).addEventListener(`click`, this._favoriteClickHandler);
+  }
+
+  setWatchedClickHandler(callback) {
+    this._callback.watchedClickHandler = callback;
+    this.getElement().querySelector(`.film-details__control-label--watched`).addEventListener(`click`, this._watchedClickHandler);
+  }
+
+  setWatchlistClickHandler(callback) {
+    this._callback.watchlistClickHandler = callback;
+    this.getElement().querySelector(`.film-details__control-label--watchlist`).addEventListener(`click`, this._watchlistClickHandler);
+  }
 }
+
+export const popup = PopupSingleton.getInstance();
