@@ -66,12 +66,8 @@ export const updateFilm = (items, updatedItem) => {
   if (index === -1) {
     return items;
   }
-
-  return [
-    ...items.slice(0, index),
-    updatedItem,
-    ...items.slice(index + 1)
-  ];
+  items.splice(index, 0, updatedItem);
+  return items;
 };
 
 export const replace = (newChild, oldChild) => {
