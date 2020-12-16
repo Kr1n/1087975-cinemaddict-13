@@ -93,6 +93,7 @@ class PopupSingleton extends Abstract {
   constructor() {
     super();
 
+    this._isOpened = false;
     this._film = null;
     this._comments = null;
     this._commentsElement = null;
@@ -110,34 +111,32 @@ class PopupSingleton extends Abstract {
     return instance;
   }
 
-  get film() {
-    return this._film;
-  }
-
-  set film(newFilm) {
-    this._film = newFilm;
-  }
-
-  get comments() {
-    return this._comments;
-  }
-
-  set comments(newComments) {
-    this._comments = newComments;
+  updatePopup(film, comments) {
+    this._film = film;
+    this._comments = comments;
+    super.removeElement();
+    this.isOpened = false;
   }
 
   getTemplate() {
     return createPopupTemplate(this._film);
   }
 
-  getElement() {
-    if (this._commentsContainer) {
-      this._commentsElement.removeElement();
-    }
-    this._commentsContainer = super.getElement().querySelector(`.film-details__bottom-container`);
-    this._commentsElement = new Comments(this._comments);
-    this._commentsContainer.appendChild(this._commentsElement.getElement());
+  get isOpened() {
+    return this._isOpened;
+  }
 
+  set isOpened(value) {
+    this._isOpened = value;
+  }
+  getElement() {
+    if (!this._isOpened) {
+      this.isOpened = true;
+
+      this._commentsContainer = super.getElement().querySelector(`.film-details__bottom-container`);
+      this._commentsElement = new Comments(this._comments);
+      this._commentsContainer.appendChild(this._commentsElement.getElement());
+    }
     return super.getElement();
   }
 

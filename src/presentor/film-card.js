@@ -54,7 +54,8 @@ export default class filmCard {
   }
 
   _closePopup() {
-    if (this._popup.film) {
+
+    if (this._popup.isOpened) {
       remove(this._popup);
     }
     document.querySelector(`body`).classList.remove(`hide-overflow`);
@@ -63,14 +64,12 @@ export default class filmCard {
   _showPopup(film, popupComments) {
     const bodyContainer = document.querySelector(`body`);
 
-    this._popup.film = film;
-    this._popup.comments = popupComments;
+    this._popup.updatePopup(film, popupComments);
+    bodyContainer.appendChild(this._popup.getElement());
 
     this._popup.setFavoriteClickHandler(this._onFavoriteClick);
     this._popup.setWatchlistClickHandler(this._onWatchlistClick);
     this._popup.setWatchedClickHandler(this._onWatchedClick);
-
-    bodyContainer.appendChild(this._popup.getElement());
     this._popup.setCloseButtonHandler(this._closePopup);
 
 
