@@ -67,9 +67,21 @@ export default class Comments extends Abstract {
   constructor(comments) {
     super();
     this._coments = comments;
+
+    this._DeleteHandler = this._DeleteHandler.bind(this);
   }
 
   getTemplate() {
     return createCommentsTemplate(this._coments);
+  }
+
+  _DeleteHandler(evt) {
+    evt.preventDefault();
+    this._callback.deleteClick();
+  }
+
+  setDeleteClickHandler(callback) {
+    this._callback.deleteClick = callback;
+    this.getElement().querySelector(`.film-details__comment-delete`).addEventListener(`click`, this._DeleteHandler);
   }
 }

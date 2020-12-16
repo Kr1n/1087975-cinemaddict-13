@@ -1,5 +1,5 @@
 import Comments from "./comments";
-import Abstract from "./abstract";
+import Smart from "./smart";
 
 const createPopupTemplate = (film) => {
   const {releaseDate, poster, ageLimit, title, rating, director, writers, actors, duration: {hours, minutes}, country, genres, description, inWatchlist, isFavorite, isWatched} = film;
@@ -89,7 +89,7 @@ const createPopupTemplate = (film) => {
 
 let instance = null;
 
-class PopupSingleton extends Abstract {
+class PopupSingleton extends Smart {
   constructor() {
     super();
 
@@ -116,6 +116,8 @@ class PopupSingleton extends Abstract {
     this._comments = comments;
     super.removeElement();
     this.isOpened = false;
+
+    this._onCommentDelete = this._onCommentDelete.bind(this);
   }
 
   getTemplate() {
@@ -129,15 +131,21 @@ class PopupSingleton extends Abstract {
   set isOpened(value) {
     this._isOpened = value;
   }
+
   getElement() {
     if (!this._isOpened) {
       this.isOpened = true;
 
       this._commentsContainer = super.getElement().querySelector(`.film-details__bottom-container`);
       this._commentsElement = new Comments(this._comments);
+      this._commentsElement.setDeleteClickHandler(this._onCommentDelete);
       this._commentsContainer.appendChild(this._commentsElement.getElement());
     }
     return super.getElement();
+  }
+
+  _onCommentDelete() {
+
   }
 
   _closeButtonHandler(evt) {
@@ -182,6 +190,7 @@ class PopupSingleton extends Abstract {
     this._callback.watchlistClickHandler = callback;
     this.getElement().querySelector(`.film-details__control-label--watchlist`).addEventListener(`click`, this._watchlistClickHandler);
   }
+
 }
 
 export const popup = PopupSingleton.getInstance();
