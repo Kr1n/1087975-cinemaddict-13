@@ -1,8 +1,6 @@
 import Abstract from "./abstract";
 
 const createCommentsTemplate = (comments = {}) => {
-  const {} = comments;
-
   const commentReducer = (accumulator, {message, author, date, emoji}) => {
     accumulator += `
       <li class="film-details__comment">
@@ -66,13 +64,13 @@ const createCommentsTemplate = (comments = {}) => {
 export default class Comments extends Abstract {
   constructor(comments) {
     super();
-    this._coments = comments;
+    this._comments = comments;
 
     this._DeleteHandler = this._DeleteHandler.bind(this);
   }
 
   getTemplate() {
-    return createCommentsTemplate(this._coments);
+    return createCommentsTemplate(this._comments);
   }
 
   _DeleteHandler(evt) {

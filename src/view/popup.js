@@ -93,13 +93,15 @@ class PopupSingleton extends Smart {
   constructor() {
     super();
 
+    this._isRendered = false;
     this._isOpened = false;
     this._film = null;
     this._comments = null;
     this._commentsElement = null;
     this._commentsContainer = null;
-    this._closeButtonHandler = this._closeButtonHandler.bind(this);
 
+    this._commentDeleteHandler = this._commentDeleteHandler.bind(this);
+    this._closeButtonHandler = this._closeButtonHandler.bind(this);
     this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
     this._watchedClickHandler = this._watchedClickHandler.bind(this);
     this._watchlistClickHandler = this._watchlistClickHandler.bind(this);
@@ -116,8 +118,6 @@ class PopupSingleton extends Smart {
     this._comments = comments;
     super.removeElement();
     this.isOpened = false;
-
-    this._onCommentDelete = this._onCommentDelete.bind(this);
   }
 
   getTemplate() {
@@ -138,30 +138,19 @@ class PopupSingleton extends Smart {
 
       this._commentsContainer = super.getElement().querySelector(`.film-details__bottom-container`);
       this._commentsElement = new Comments(this._comments);
-      this._commentsElement.setDeleteClickHandler(this._onCommentDelete);
+      this._commentsElement.setDeleteClickHandler(this._commentDeleteHandler);
       this._commentsContainer.appendChild(this._commentsElement.getElement());
     }
     return super.getElement();
   }
 
-  _onCommentDelete() {
+  _commentDeleteHandler() {
 
   }
 
   _closeButtonHandler(evt) {
     evt.preventDefault();
     this._callback.closeButtonClick();
-  }
-
-  setCloseButtonHandler(callback) {
-    this._callback.closeButtonClick = callback;
-    this.getElement().querySelector(`.film-details__close-btn`).addEventListener(`click`, this._closeButtonHandler);
-  }
-
-  removeElement() {
-    super.removeElement();
-    this.film = null;
-    this.comments = null;
   }
 
   _favoriteClickHandler() {
@@ -174,6 +163,11 @@ class PopupSingleton extends Smart {
 
   _watchlistClickHandler() {
     this._callback.watchlistClickHandler();
+  }
+
+  setCloseButtonHandler(callback) {
+    this._callback.closeButtonClick = callback;
+    this.getElement().querySelector(`.film-details__close-btn`).addEventListener(`click`, this._closeButtonHandler);
   }
 
   setFavoriteClickHandler(callback) {
@@ -191,6 +185,11 @@ class PopupSingleton extends Smart {
     this.getElement().querySelector(`.film-details__control-label--watchlist`).addEventListener(`click`, this._watchlistClickHandler);
   }
 
+  removeElement() {
+    super.removeElement();
+    this.film = null;
+    this.comments = null;
+  }
 }
 
 export const popup = PopupSingleton.getInstance();

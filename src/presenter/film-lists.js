@@ -97,11 +97,12 @@ export default class FilmLists {
   }
 
   _onShowMoreBtnClick() {
+    const filmsListContainer = this._filmsList.getElement().querySelector(`.films-list__container`);
     this._allFilms
       .slice(this._renderedFilmCount, this._renderedFilmCount + FILMS_PER_PAGE)
       .forEach((film) => this._renderFilmCard(
           film,
-          this._filmsList.getElement().querySelector(`.films-list__container`),
+          filmsListContainer,
           this._filmCardPresenters));
 
     this._renderedFilmCount += FILMS_PER_PAGE;
