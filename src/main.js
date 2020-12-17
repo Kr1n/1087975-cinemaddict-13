@@ -5,7 +5,7 @@ import {generateComment} from "./mock/comment";
 import Navigation from "./view/navigation";
 import Profile from "./view/profile";
 import FooterStatistics from "./view/footer";
-import FilmListsPesenter from "./presentor/film-lists";
+import FilmListsPesenter from "./presenter/film-lists";
 
 const films = new Array(MOCK_FILMS_COUNT).fill().map(generateFilm);
 const comments = new Array(MOCK_COMMENTS_COUNT).fill().map(generateComment);
