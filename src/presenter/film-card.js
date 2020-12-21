@@ -1,14 +1,14 @@
 import {remove, render, replace, RenderPosition} from "../utils";
 import FilmCard from "../view/film-card";
-import {popup} from "../view/popup";
+import Popup from "../view/popup";
 
 export default class filmCard {
   constructor(container, changeData) {
     this._container = container;
     this._changeData = changeData;
 
-    this._popup = popup;
-    this._filmCard = null;
+    this._popupComponent = null;
+    this._filmCardComponent = null;
 
     this._onFavoriteClick = this._onFavoriteClick.bind(this);
     this._onWatchlistClick = this._onWatchlistClick.bind(this);
@@ -16,63 +16,72 @@ export default class filmCard {
 
     this._onEscKeyDown = this._onEscKeyDown.bind(this);
     this._onFilmCardClick = this._onFilmCardClick.bind(this);
-    this._closePopup = this._closePopup.bind(this);
+    this._onClosePopupClick = this._onClosePopupClick.bind(this);
+    this._onFormSubmit = this._onFormSubmit.bind(this);
+    this._onDeleteClick = this._onDeleteClick.bind(this);
   }
 
   init(film, comments) {
+    const prevFilmComponent = this._filmCardComponent;
+
     this._film = film;
     this._comments = comments;
 
-    const prevFilmComponent = this._filmCard;
+    const popupComments = this._comments.filter((item) => (this._film).comments.has(item.id));
 
-    this._filmCard = new FilmCard(this._film);
-    this._filmCard.setClickPosterHandler(this._onFilmCardClick);
+    this._filmCardComponent = new FilmCard(this._film);
+    this._popupComponent = new Popup(this._film, popupComments);
 
-    this._filmCard.setFavoriteClickHandler(this._onFavoriteClick);
-    this._filmCard.setWatchlistClickHandler(this._onWatchlistClick);
-    this._filmCard.setWatchedClickHandler(this._onWatchedClick);
+    this._filmCardComponent.setClickPosterHandler(this._onFilmCardClick);
+    this._filmCardComponent.setFavoriteClickHandler(this._onFavoriteClick);
+    this._filmCardComponent.setWatchlistClickHandler(this._onWatchlistClick);
+    this._filmCardComponent.setWatchedClickHandler(this._onWatchedClick);
+
+    this._popupComponent.setFavoriteClickHandler(this._onFavoriteClick);
+    this._popupComponent.setWatchlistClickHandler(this._onWatchlistClick);
+    this._popupComponent.setWatchedClickHandler(this._onWatchedClick);
+    this._popupComponent.setCloseButtonHandler(this._onClosePopupClick);
+    this._popupComponent.setFormSubmitHandler(this._onFormSubmit);
+    this._popupComponent.setDeleteClickHandler(this._onDeleteClick);
+
 
     if (prevFilmComponent === null) {
-      render(this._container, this._filmCard, RenderPosition.BEFOREEND);
+      render(this._container, this._filmCardComponent, RenderPosition.BEFOREEND);
       return;
     }
-    replace(this._filmCard, prevFilmComponent);
+    replace(this._filmCardComponent, prevFilmComponent);
+  }
+
+  _onDeleteClick() {
+    console.log(`deleteClick`);
+  }
+
+  _onFormSubmit() {
+    console.log(`onFormSubmit`);
+  }
+
+  _onFilmCardClick() {
+    // this._onClosePopupClick();
+    this._showPopup();
   }
 
   _onEscKeyDown(evt) {
     if (evt.key === `Escape` || evt.key === `Esc`) {
       evt.preventDefault();
-      this._closePopup();
+      this._onClosePopupClick();
       document.removeEventListener(`keydown`, this._onEscKeyDown);
     }
   }
 
-  _onFilmCardClick() {
-    const popupComments = this._comments.filter((item) => (this._film).comments.has(item.id));
-    this._closePopup();
-    this._showPopup(this._film, popupComments);
-  }
-
-  _closePopup() {
-
-    if (this._popup.isOpened) {
-      remove(this._popup);
-    }
+  _onClosePopupClick() {
+    remove(this._popupComponent);
     document.querySelector(`body`).classList.remove(`hide-overflow`);
   }
 
-  _showPopup(film, popupComments) {
+  _showPopup() {
     const bodyContainer = document.querySelector(`body`);
 
-    this._popup.updatePopup(film, popupComments);
-    bodyContainer.appendChild(this._popup.getElement());
-
-    this._popup.setFavoriteClickHandler(this._onFavoriteClick);
-    this._popup.setWatchlistClickHandler(this._onWatchlistClick);
-    this._popup.setWatchedClickHandler(this._onWatchedClick);
-    this._popup.setCloseButtonHandler(this._closePopup);
-
-
+    bodyContainer.appendChild(this._popupComponent.getElement());
     document.addEventListener(`keydown`, this._onEscKeyDown);
     document.querySelector(`body`).classList.add(`hide-overflow`);
   }
@@ -112,5 +121,4 @@ export default class filmCard {
         )
     );
   }
-
 }
