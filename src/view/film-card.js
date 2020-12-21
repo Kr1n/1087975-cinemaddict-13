@@ -38,10 +38,6 @@ export default class FilmCard extends Abstract {
     this._watchlistClickHandler = this._watchlistClickHandler.bind(this);
   }
 
-  get film() {
-    return this._film;
-  }
-
   getTemplate() {
     return createFilmCardTemplate(this._film);
   }

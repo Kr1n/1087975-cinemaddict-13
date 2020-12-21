@@ -3,13 +3,16 @@ import FilmCard from "../view/film-card";
 import Popup from "../view/popup";
 
 export default class filmCard {
-  constructor(container, changeData) {
+  constructor(container, changeData, openPopup) {
     this._container = container;
     this._changeData = changeData;
+    this._openPopup = openPopup;
 
     this._popupComponent = null;
     this._filmCardComponent = null;
+    this._isPopupOpened = false;
 
+    this.closePopup = this.closePopup.bind(this);
     this._onFavoriteClick = this._onFavoriteClick.bind(this);
     this._onWatchlistClick = this._onWatchlistClick.bind(this);
     this._onWatchedClick = this._onWatchedClick.bind(this);
@@ -23,6 +26,7 @@ export default class filmCard {
 
   init(film, comments) {
     const prevFilmComponent = this._filmCardComponent;
+    const prevPopupComponent = this._popupComponent;
 
     this._film = film;
     this._comments = comments;
@@ -45,11 +49,23 @@ export default class filmCard {
     this._popupComponent.setDeleteClickHandler(this._onDeleteClick);
 
 
-    if (prevFilmComponent === null) {
+    if (prevFilmComponent === null || prevPopupComponent === null) {
       render(this._container, this._filmCardComponent, RenderPosition.BEFOREEND);
       return;
     }
+
     replace(this._filmCardComponent, prevFilmComponent);
+
+    if (this._isPopupOpened) {
+      replace(this._popupComponent, prevPopupComponent);
+    }
+
+    remove(prevFilmComponent);
+    remove(prevPopupComponent);
+  }
+
+  getPopupID() {
+
   }
 
   _onDeleteClick() {
@@ -68,22 +84,39 @@ export default class filmCard {
   _onEscKeyDown(evt) {
     if (evt.key === `Escape` || evt.key === `Esc`) {
       evt.preventDefault();
-      this._onClosePopupClick();
-      document.removeEventListener(`keydown`, this._onEscKeyDown);
+      this.closePopup();
     }
   }
 
   _onClosePopupClick() {
-    remove(this._popupComponent);
+    this.closePopup();
+  }
+
+  closePopup() {
+    if (!this._isPopupOpened) {
+      return;
+    }
+    const bodyContainer = document.querySelector(`body`);
+
+    bodyContainer.removeChild(this._popupComponent.getElement());
+    document.removeEventListener(`keydown`, this._onEscKeyDown);
     document.querySelector(`body`).classList.remove(`hide-overflow`);
+    this._isPopupOpened = false;
   }
 
   _showPopup() {
+    // todo
+    // почему не работает
+    if (this._isPopupOpened) {
+      return;
+    }
+    this._openPopup(this._film.id);
     const bodyContainer = document.querySelector(`body`);
 
     bodyContainer.appendChild(this._popupComponent.getElement());
     document.addEventListener(`keydown`, this._onEscKeyDown);
     document.querySelector(`body`).classList.add(`hide-overflow`);
+    this._isPopupOpened = true;
   }
 
   _onFavoriteClick() {
@@ -120,5 +153,10 @@ export default class filmCard {
             }
         )
     );
+  }
+
+  destroy() {
+    remove(this._popupComponent);
+    remove(this._filmCardComponent);
   }
 }

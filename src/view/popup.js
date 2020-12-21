@@ -172,15 +172,15 @@ export default class Popup extends Smart {
     this._watchlistClickHandler = this._watchlistClickHandler.bind(this);
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
 
-    this._setInnerHandlers();
+    // this._setInnerHandlers();
   }
 
   _setInnerHandlers() {
-    // this.getElement().querySelector(`.film-details__close-btn`).addEventListener(`click`, this._closeButtonHandler);
-    // this.getElement().querySelector(`.film-details__control-label--favorite`).addEventListener(`click`, this._favoriteClickHandler);
-    // this.getElement().querySelector(`.film-details__control-label--watched`).addEventListener(`click`, this._watchedClickHandler);
-    // this.getElement().querySelector(`.film-details__control-label--watchlist`).addEventListener(`click`, this._watchlistClickHandler);
-    // this.getElement().querySelector(`.film-details__comment-delete`).addEventListener(`click`, this._deleteClickHandler);
+    this.getElement().querySelector(`.film-details__close-btn`).addEventListener(`click`, this._closeButtonHandler);
+    this.getElement().querySelector(`.film-details__control-label--favorite`).addEventListener(`click`, this._favoriteClickHandler);
+    this.getElement().querySelector(`.film-details__control-label--watched`).addEventListener(`click`, this._watchedClickHandler);
+    this.getElement().querySelector(`.film-details__control-label--watchlist`).addEventListener(`click`, this._watchlistClickHandler);
+    this.getElement().querySelector(`.film-details__comment-delete`).addEventListener(`click`, this._deleteClickHandler);
   }
 
   restoreHandlers() {
@@ -193,15 +193,18 @@ export default class Popup extends Smart {
     this._callback.closeButtonClick();
   }
 
-  _favoriteClickHandler() {
+  _favoriteClickHandler(evt) {
+    evt.preventDefault();
     this._callback.favoriteClick();
   }
 
-  _watchedClickHandler() {
+  _watchedClickHandler(evt) {
+    evt.preventDefault();
     this._callback.watchedClickHandler();
   }
 
-  _watchlistClickHandler() {
+  _watchlistClickHandler(evt) {
+    evt.preventDefault();
     this._callback.watchlistClickHandler();
   }
 
