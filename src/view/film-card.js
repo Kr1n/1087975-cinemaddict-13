@@ -1,4 +1,4 @@
-import Abstract from "./abstract";
+import Smart from "./smart";
 
 const createFilmCardTemplate = (film) => {
   let template = ``;
@@ -27,7 +27,7 @@ const createFilmCardTemplate = (film) => {
   return template;
 };
 
-export default class FilmCard extends Abstract {
+export default class FilmCard extends Smart {
   constructor(film) {
     super();
     this._film = film;
@@ -36,6 +36,20 @@ export default class FilmCard extends Abstract {
     this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
     this._watchedClickHandler = this._watchedClickHandler.bind(this);
     this._watchlistClickHandler = this._watchlistClickHandler.bind(this);
+
+    this._setInnerHandlers();
+  }
+
+  _setInnerHandlers() {
+
+  }
+
+  restoreHandlers() {
+    this._setInnerHandlers();
+    this.setClickPosterHandler(this._callback.clickPoster);
+    this.setFavoriteClickHandler(this._callback.favoriteClick);
+    this.setWatchedClickHandler(this._callback.watchedClickHandler);
+    this.setWatchlistClickHandler(this._callback.watchlistClickHandler);
   }
 
   getTemplate() {

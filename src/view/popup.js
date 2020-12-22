@@ -172,20 +172,21 @@ export default class Popup extends Smart {
     this._watchlistClickHandler = this._watchlistClickHandler.bind(this);
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
 
-    // this._setInnerHandlers();
+    this._setInnerHandlers();
   }
 
   _setInnerHandlers() {
-    this.getElement().querySelector(`.film-details__close-btn`).addEventListener(`click`, this._closeButtonHandler);
-    this.getElement().querySelector(`.film-details__control-label--favorite`).addEventListener(`click`, this._favoriteClickHandler);
-    this.getElement().querySelector(`.film-details__control-label--watched`).addEventListener(`click`, this._watchedClickHandler);
-    this.getElement().querySelector(`.film-details__control-label--watchlist`).addEventListener(`click`, this._watchlistClickHandler);
-    this.getElement().querySelector(`.film-details__comment-delete`).addEventListener(`click`, this._deleteClickHandler);
+
   }
 
   restoreHandlers() {
     this._setInnerHandlers();
     this.setFormSubmitHandler(this._callback.formSubmit);
+    this.setCloseButtonHandler(this._callback.closeButtonClick);
+    this.setFavoriteClickHandler(this._callback.favoriteClick);
+    this.setWatchedClickHandler(this._callback.watchedClickHandler);
+    this.setWatchlistClickHandler(this._callback.watchlistClickHandler);
+    this.setDeleteClickHandler(this._callback.deleteClick);
   }
 
   _closeButtonHandler(evt) {
