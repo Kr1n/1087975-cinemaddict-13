@@ -45,8 +45,8 @@ export default class FilmLists {
     if (this._allFilms.length) {
       this._renderContentFilms();
       this._renderShowMoreButton();
-      this._renderTopRated();
-      this._renderMostCommented();
+      // this._renderTopRated();
+      // this._renderMostCommented();
     } else {
       this._renderEmptyLists();
     }
@@ -125,7 +125,6 @@ export default class FilmLists {
 
     if (this._openedPopupId) {
       this._filmCardPresenters[this._openedPopupId].closePopup();
-      return;
     }
     this._openedPopupId = filmId;
   }

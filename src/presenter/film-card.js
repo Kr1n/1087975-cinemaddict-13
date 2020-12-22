@@ -64,10 +64,6 @@ export default class filmCard {
     remove(prevPopupComponent);
   }
 
-  getPopupID() {
-
-  }
-
   _onDeleteClick() {
     console.log(`deleteClick`);
   }
@@ -105,8 +101,6 @@ export default class filmCard {
   }
 
   _showPopup() {
-    // todo
-    // почему не работает
     if (this._isPopupOpened) {
       return;
     }
