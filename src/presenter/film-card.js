@@ -63,11 +63,11 @@ export default class filmCard {
   }
 
   _onDeleteClick() {
-    console.log(`deleteClick`);
+    // console.log(`deleteClick`);
   }
 
   _onFormSubmit() {
-    console.log(`onFormSubmit`);
+    // console.log(`onFormSubmit`);
   }
 
   _onFilmCardClick() {
