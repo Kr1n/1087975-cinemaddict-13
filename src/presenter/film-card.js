@@ -31,10 +31,8 @@ export default class filmCard {
     this._film = film;
     this._comments = comments;
 
-    const popupComments = this._comments.filter((item) => (this._film).comments.has(item.id));
-
     this._filmCardComponent = new FilmCard(this._film);
-    this._popupComponent = new Popup(this._film, popupComments);
+    this._popupComponent = new Popup(this._film, this._comments);
 
     this._filmCardComponent.setClickPosterHandler(this._onFilmCardClick);
     this._filmCardComponent.setFavoriteClickHandler(this._onFavoriteClick);
@@ -73,7 +71,6 @@ export default class filmCard {
   }
 
   _onFilmCardClick() {
-    // this._onClosePopupClick();
     this._showPopup();
   }
 

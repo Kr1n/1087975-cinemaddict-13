@@ -1,6 +1,6 @@
 import Smart from "./smart";
 
-const createCommentsTemplate = (comments) => {
+const createCommentsTemplate = (data) => {
   const commentReducer = (accumulator, {message, author, date, emoji}) => {
     accumulator += `
       <li class="film-details__comment">
@@ -20,21 +20,24 @@ const createCommentsTemplate = (comments) => {
     return accumulator;
   };
 
-  const commentsElements = comments.reduce(commentReducer, ``);
+  const {_comments, selectedEmoji, newCommentText} = data;
+  const commentsElements = _comments.reduce(commentReducer, ``);
 
   return `<div class="film-details__bottom-container">
         <section class="film-details__comments-wrap">
-        <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${comments.length}</span></h3>
+        <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${_comments.length}</span></h3>
 
         <ul class="film-details__comments-list">
           ${commentsElements}
         </ul>
 
         <div class="film-details__new-comment">
-          <div class="film-details__add-emoji-label"></div>
+          <div class="film-details__add-emoji-label">
+          ${selectedEmoji ? `<img src="images/emoji/${selectedEmoji}.png" width="55" height="55" alt="emoji-${selectedEmoji}">` : ``}
+        </div>
 
           <label class="film-details__comment-label">
-            <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment"></textarea>
+            <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment">${newCommentText}</textarea>
           </label>
 
           <div class="film-details__emoji-list">
@@ -63,8 +66,8 @@ const createCommentsTemplate = (comments) => {
     </div>`;
 };
 
-const createFilmDetailsTemplate = (film) => {
-  const {releaseDate, poster, ageLimit, title, rating, director, writers, actors, duration: {hours, minutes}, country, genres, description, inWatchlist, isFavorite, isWatched} = film;
+const createFilmDetailsTemplate = (data) => {
+  const {releaseDate, poster, ageLimit, title, rating, director, writers, actors, duration: {hours, minutes}, country, genres, description, inWatchlist, isFavorite, isWatched} = data;
 
   const genresElement = Array.from(genres).reduce(
       (accumulator, item) => `${accumulator}<span class="film-details__genre">${item}</span>`,
@@ -149,11 +152,11 @@ const createFilmDetailsTemplate = (film) => {
   </div>`;
 };
 
-const createPopupTemplate = (film, comments) => {
+const createPopupTemplate = (data) => {
   return `<section class="film-details">
   <form class="film-details__inner" action="" method="get">
-    ${createFilmDetailsTemplate(film)}
-    ${createCommentsTemplate(comments)}
+    ${createFilmDetailsTemplate(data)}
+    ${createCommentsTemplate(data)}
   </form>
 </section>`;
 };
@@ -162,8 +165,7 @@ export default class Popup extends Smart {
   constructor(film, comments) {
     super();
 
-    this._film = film;
-    this._comments = comments;
+    this._data = Popup.parseFilmToData(film, comments);
     this._callback = [];
     this._deleteClickHandler = this._deleteClickHandler.bind(this);
     this._closeButtonHandler = this._closeButtonHandler.bind(this);
@@ -172,11 +174,20 @@ export default class Popup extends Smart {
     this._watchlistClickHandler = this._watchlistClickHandler.bind(this);
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
 
+    this._commentTextInputHandler = this._commentTextInputHandler.bind(this);
+    this._emojiChangeHandler = this._emojiChangeHandler.bind(this);
+
     this._setInnerHandlers();
   }
 
   _setInnerHandlers() {
+    this.getElement()
+      .querySelector(`.film-details__emoji-list`)
+      .addEventListener(`change`, this._emojiChangeHandler);
 
+    this.getElement()
+      .querySelector(`.film-details__comment-input`)
+      .addEventListener(`input`, this._commentTextInputHandler);
   }
 
   restoreHandlers() {
@@ -187,6 +198,20 @@ export default class Popup extends Smart {
     this.setWatchedClickHandler(this._callback.watchedClickHandler);
     this.setWatchlistClickHandler(this._callback.watchlistClickHandler);
     this.setDeleteClickHandler(this._callback.deleteClick);
+  }
+
+  _commentTextInputHandler(evt) {
+    evt.preventDefault();
+    this.updateData({
+      newCommentText: evt.target.value
+    }, true);
+  }
+
+  _emojiChangeHandler(evt) {
+    evt.preventDefault();
+    this.updateData({
+      selectedEmoji: evt.target.value
+    });
   }
 
   _closeButtonHandler(evt) {
@@ -251,6 +276,43 @@ export default class Popup extends Smart {
   }
 
   getTemplate() {
-    return createPopupTemplate(this._film, this._comments);
+    return createPopupTemplate(this._data);
+  }
+
+  static parseFilmToData(film, _comments) {
+    return Object.assign(
+        {},
+        film,
+        {
+          _comments,
+          selectedEmoji: null,
+          newCommentText: ``
+        }
+    );
+  }
+
+  static parseDataToFilm(data) {
+    data = Object.assign({}, data);
+
+    if (!data.isDueDate) {
+      data.dueDate = null;
+    }
+
+    if (!data.isRepeating) {
+      data.repeating = {
+        mo: false,
+        tu: false,
+        we: false,
+        th: false,
+        fr: false,
+        sa: false,
+        su: false
+      };
+    }
+
+    delete data.isDueDate;
+    delete data.isRepeating;
+
+    return data;
   }
 }

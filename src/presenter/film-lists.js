@@ -117,7 +117,8 @@ export default class FilmLists {
 
   _renderFilmCard(film, container, filmArray) {
     const filmCardPresenter = new FilmCardPresenter(container, this._onFilmChange, this._onPopupOpen);
-    filmCardPresenter.init(film, this._allComments);
+    const popupComments = this._allComments.filter((item) => (film).comments.has(item.id));
+    filmCardPresenter.init(film, popupComments);
     filmArray[film.id] = filmCardPresenter;
   }
 
