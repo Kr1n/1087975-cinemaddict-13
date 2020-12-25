@@ -1,19 +1,23 @@
-import {remove, render, updateFilm, RenderPosition} from "../utils";
+import {remove, render, RenderPosition} from "../utils/common";
 import SortButtons from "../view/sort-buttons";
 import ShowMore from "../view/show-more";
 import FilmsList from "../view/films-list";
 import FilmCardPresenter from "./film-card";
 import TopRatedFilms from "../view/top-rated-films";
-import {FILMS_IN_TOPRATED_LIST, FILMS_IN_MOSTCOMMENTED_LIST, FILMS_PER_PAGE} from "../consts";
+import {FILMS_IN_TOPRATED_LIST, FILMS_IN_MOSTCOMMENTED_LIST, FILMS_PER_PAGE, SortType} from "../consts";
 import MostCommentedFilms from "../view/most-commented-films";
 import EmptyFilmList from "../view/empty-film-list";
 import AllFilms from "../view/all-films";
+import {sortFilmDate, sortFilmRating} from "../utils/film.js";
 
 export default class FilmLists {
-  constructor(filmListsContainer) {
+  constructor(filmListsContainer, filmsModel) {
+    this._filmsModel = filmsModel;
     this._filmListsContainer = filmListsContainer;
     this._renderedFilmCount = FILMS_PER_PAGE;
     this._openedPopupId = null;
+
+    this._currentSortType = null;
 
     this._sortButtons = new SortButtons();
     this._filmsList = new FilmsList();
@@ -23,26 +27,44 @@ export default class FilmLists {
     this._emptyFilmList = new EmptyFilmList();
     this._showMoreBtn = new ShowMore();
 
+    this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
     this._onShowMoreBtnClick = this._onShowMoreBtnClick.bind(this);
     this._onFilmChange = this._onFilmChange.bind(this);
     this._onPopupOpen = this._onPopupOpen.bind(this);
   }
 
-  init(allFilms, allComments) {
-    this._allFilms = allFilms.slice();
+  init(allComments) {
     this._allComments = allComments;
+
     this._filmCardPresenters = {};
     this._mostCommentedCardPresenters = {};
     this._topRatedCardPresenters = {};
 
-    render(this._filmListsContainer, this._sortButtons, RenderPosition.BEFOREEND);
+    this._renderSort();
     render(this._filmListsContainer, this._filmsList, RenderPosition.BEFOREEND);
-
     this._renderFilmsLists();
   }
 
+  _renderSort() {
+    render(this._filmListsContainer, this._sortButtons, RenderPosition.BEFOREEND);
+    this._sortButtons.setSortTypeChangeHandler(this._handleSortTypeChange);
+  }
+
+  _getFilms() {
+    switch (this._currentSortType) {
+      case SortType.DATE:
+        return this._filmsModel.getFilms().slice().sort(sortFilmDate);
+      case SortType.RATING:
+        return this._filmsModel.getFilms().slice().sort(sortFilmRating);
+    }
+
+    return this._filmsModel.getFilms();
+  }
+
   _renderFilmsLists() {
-    if (this._allFilms.length) {
+
+    if (this._getFilms().length) {
+
       this._renderContentFilms();
       this._renderShowMoreButton();
       // this._renderTopRated();
@@ -53,14 +75,12 @@ export default class FilmLists {
   }
 
   _renderContentFilms() {
+    const filmCount = this._getFilms().length;
+    const films = this._getFilms().slice(0, Math.min(filmCount, FILMS_PER_PAGE));
     const container = this._catalogFilms.getElement().querySelector(`.films-list__container`);
-
     render(this._filmsList, this._catalogFilms, RenderPosition.BEFOREEND);
-    this._allFilms
-      .slice(0, this._renderedFilmCount)
-      .forEach((film) => {
-        this._renderFilmCard(film, container, this._filmCardPresenters);
-      });
+
+    films.forEach((film) => this._renderFilmCard(film, container, this._filmCardPresenters));
   }
 
   _renderTopRated() {
@@ -96,7 +116,7 @@ export default class FilmLists {
   }
 
   _renderShowMoreButton() {
-    if (this._allFilms.length > FILMS_PER_PAGE) {
+    if (this._getFilms().length > FILMS_PER_PAGE) {
       render(this._filmsList, this._showMoreBtn, RenderPosition.BEFOREEND);
     }
     this._showMoreBtn.setClickHandler(this._onShowMoreBtnClick);
@@ -104,13 +124,15 @@ export default class FilmLists {
 
   _onShowMoreBtnClick() {
     const filmsListContainer = this._filmsList.getElement().querySelector(`.films-list__container`);
-    this._allFilms
-      .slice(this._renderedFilmCount, this._renderedFilmCount + FILMS_PER_PAGE)
-      .forEach((film) => this._renderFilmCard(film, filmsListContainer, this._filmCardPresenters));
 
-    this._renderedFilmCount += FILMS_PER_PAGE;
+    const filmCount = this._getFilms().length;
+    const newRenderedTaskCount = Math.min(filmCount, this._renderedFilmCount + FILMS_PER_PAGE);
+    const films = this._getFilms().slice(this._renderedFilmCount, newRenderedTaskCount);
 
-    if (this._renderedFilmCount >= this._allFilms.length) {
+    films.forEach((film) => this._renderFilmCard(film, filmsListContainer, this._filmCardPresenters));
+    this._renderedFilmCount = newRenderedTaskCount;
+
+    if (this._renderedFilmCount >= filmCount) {
       remove(this._showMoreBtn);
     }
   }
@@ -123,7 +145,6 @@ export default class FilmLists {
   }
 
   _onPopupOpen(filmId) {
-
     if (this._openedPopupId) {
       this._filmCardPresenters[this._openedPopupId].closePopup();
     }
@@ -131,7 +152,7 @@ export default class FilmLists {
   }
 
   _onFilmChange(updatedFilm) {
-    this._allFilms = updateFilm(this._allFilms, updatedFilm);
+    //    this._allFilms = updateFilm(this._allFilms, updatedFilm);
 
     if (this._filmCardPresenters[updatedFilm.id] !== undefined) {
       this._filmCardPresenters[updatedFilm.id].init(updatedFilm, this._allComments);
@@ -143,6 +164,26 @@ export default class FilmLists {
     if (this._topRatedCardPresenters[updatedFilm.id] !== undefined) {
       this._topRatedCardPresenters[updatedFilm.id].init(updatedFilm, this._allComments);
     }
+  }
+
+  _clearFilmList() {
+    Object
+      .values(this._filmCardPresenters)
+      .forEach((presenter) => presenter.destroy());
+    this._filmCardPresenters = {};
+    this._renderedFilmCount = FILMS_PER_PAGE;
+    remove(this._showMoreBtn);
+  }
+
+  _handleSortTypeChange(sortType) {
+    if (this._currentSortType === sortType) {
+      return;
+    }
+
+    this._currentSortType = sortType;
+    this._clearFilmList();
+    this._renderContentFilms(this._getFilms());
+    this._renderShowMoreButton();
   }
 }
 

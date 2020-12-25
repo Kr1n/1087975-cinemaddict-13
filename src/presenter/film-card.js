@@ -1,4 +1,4 @@
-import {remove, render, replace, RenderPosition} from "../utils";
+import {remove, render, replace, RenderPosition} from "../utils/common";
 import FilmCard from "../view/film-card";
 import Popup from "../view/popup";
 
@@ -31,8 +31,10 @@ export default class filmCard {
     this._film = film;
     this._comments = comments;
 
+    const popupComments = this._comments.filter((item) => (this._film).comments.has(item.id));
+
     this._filmCardComponent = new FilmCard(this._film);
-    this._popupComponent = new Popup(this._film, this._comments);
+    this._popupComponent = new Popup(this._film, popupComments);
 
     this._filmCardComponent.setClickPosterHandler(this._onFilmCardClick);
     this._filmCardComponent.setFavoriteClickHandler(this._onFavoriteClick);

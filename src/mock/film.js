@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import {getRandomInteger} from "../utils";
+import {getRandomInteger} from "../utils/common";
 
 let currentId = 1;
 

@@ -1,4 +1,4 @@
-import Abstract from "./view/abstract";
+import Abstract from "../view/abstract";
 
 export const getRandomInteger = (a = 0, b = 1) => {
   const lower = Math.ceil(Math.min(a, b));
