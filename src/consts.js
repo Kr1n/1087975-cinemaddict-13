@@ -1,4 +1,6 @@
-export const FILM_COUNT = 6;
-export const FILM_SHOWMORE_COUNT = 5;
-export const EXTRA_CARD_COUNT = 2;
-export const COMMENTS_COUNT = 100;
+export const MOCK_FILMS_COUNT = 6;
+export const MOCK_COMMENTS_COUNT = 100;
+export const FILMS_PER_PAGE = 8;
+export const FILMS_IN_TOPRATED_LIST = 2;
+export const FILMS_IN_MOSTCOMMENTED_LIST = 2;
+

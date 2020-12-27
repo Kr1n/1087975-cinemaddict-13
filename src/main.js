@@ -1,14 +1,14 @@
-import {FILM_COUNT, COMMENTS_COUNT} from "./consts";
+import {MOCK_FILMS_COUNT, MOCK_COMMENTS_COUNT} from "./consts";
 import {render, RenderPosition} from "./utils";
 import {generateFilm} from "./mock/film";
 import {generateComment} from "./mock/comment";
 import Navigation from "./view/navigation";
 import Profile from "./view/profile";
 import FooterStatistics from "./view/footer";
-import FilmListsPesenter from "./presentor/film-lists";
+import FilmListsPesenter from "./presenter/film-lists";
 
-const films = new Array(FILM_COUNT).fill().map(generateFilm);
-const comments = new Array(COMMENTS_COUNT).fill().map(generateComment);
+const films = new Array(MOCK_FILMS_COUNT).fill().map(generateFilm);
+const comments = new Array(MOCK_COMMENTS_COUNT).fill().map(generateComment);
 
 const headerContainer = document.querySelector(`.header`);
 const mainContainer = document.querySelector(`.main`);
