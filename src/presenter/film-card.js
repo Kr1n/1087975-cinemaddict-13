@@ -1,6 +1,7 @@
 import {remove, render, replace, RenderPosition} from "../utils/common";
 import FilmCard from "../view/film-card";
 import Popup from "../view/popup";
+import {UserAction, UpdateType} from "../consts.js";
 
 export default class filmCard {
   constructor(container, changeData, openPopup) {
@@ -48,7 +49,6 @@ export default class filmCard {
     this._popupComponent.setFormSubmitHandler(this._onFormSubmit);
     this._popupComponent.setDeleteClickHandler(this._onDeleteClick);
 
-
     if (prevFilmComponent === null || prevPopupComponent === null) {
       render(this._container, this._filmCardComponent, RenderPosition.BEFOREEND);
       return;
@@ -60,31 +60,9 @@ export default class filmCard {
       replace(this._popupComponent, prevPopupComponent);
     }
 
+
     remove(prevFilmComponent);
     remove(prevPopupComponent);
-  }
-
-  _onDeleteClick() {
-    // console.log(`deleteClick`);
-  }
-
-  _onFormSubmit() {
-    // console.log(`onFormSubmit`);
-  }
-
-  _onFilmCardClick() {
-    this._showPopup();
-  }
-
-  _onEscKeyDown(evt) {
-    if (evt.key === `Escape` || evt.key === `Esc`) {
-      evt.preventDefault();
-      this.closePopup();
-    }
-  }
-
-  _onClosePopupClick() {
-    this.closePopup();
   }
 
   closePopup() {
@@ -112,8 +90,38 @@ export default class filmCard {
     this._isPopupOpened = true;
   }
 
+
+  _onDeleteClick(comment) {
+    this._changeData(
+        UserAction.DELETE_COMMENT,
+        UpdateType.PATCH,
+        comment
+    );
+  }
+
+  _onFormSubmit() {
+    // console.log(`onFormSubmit`);
+  }
+
+  _onFilmCardClick() {
+    this._showPopup();
+  }
+
+  _onEscKeyDown(evt) {
+    if (evt.key === `Escape` || evt.key === `Esc`) {
+      evt.preventDefault();
+      this.closePopup();
+    }
+  }
+
+  _onClosePopupClick() {
+    this.closePopup();
+  }
+
   _onFavoriteClick() {
     this._changeData(
+        UserAction.UPDATE_FILM,
+        UpdateType.PATCH,
         Object.assign(
             {},
             this._film,
@@ -126,6 +134,8 @@ export default class filmCard {
 
   _onWatchedClick() {
     this._changeData(
+        UserAction.UPDATE_FILM,
+        UpdateType.PATCH,
         Object.assign(
             {},
             this._film,
@@ -138,6 +148,8 @@ export default class filmCard {
 
   _onWatchlistClick() {
     this._changeData(
+        UserAction.UPDATE_FILM,
+        UpdateType.PATCH,
         Object.assign(
             {},
             this._film,
@@ -150,6 +162,7 @@ export default class filmCard {
 
   destroy() {
     remove(this._popupComponent);
+    document.removeEventListener(`keydown`, this._onEscKeyDown);
     remove(this._filmCardComponent);
   }
 }

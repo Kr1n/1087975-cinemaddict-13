@@ -1,7 +1,7 @@
 import Smart from "./smart";
 
 const createCommentsTemplate = (data) => {
-  const commentReducer = (accumulator, {message, author, date, emoji}) => {
+  const commentReducer = (accumulator, {id, message, author, date, emoji}) => {
     accumulator += `
       <li class="film-details__comment">
         <span class="film-details__comment-emoji">
@@ -12,7 +12,7 @@ const createCommentsTemplate = (data) => {
           <p class="film-details__comment-info">
             <span class="film-details__comment-author">${author}</span>
             <span class="film-details__comment-day">${date.format(`DD/MM/YYYY HH:mm`)}</span>
-            <button class="film-details__comment-delete">Delete</button>
+            <button class="film-details__comment-delete" data-comment-id="${id}">Delete</button>
           </p>
         </div>
       </li>
@@ -236,7 +236,10 @@ export default class Popup extends Smart {
 
   _deleteClickHandler(evt) {
     evt.preventDefault();
-    this._callback.deleteClick();
+    const comment = this._data._comments.find((item) => item.id === Number(evt.target.dataset.commentId));
+    const film = Popup.parseDataToFilm(this._data);
+
+    this._callback.deleteClick({comment, film});
   }
 
   _formSubmitHandler(evt) {
@@ -267,7 +270,11 @@ export default class Popup extends Smart {
 
   setDeleteClickHandler(callback) {
     this._callback.deleteClick = callback;
-    this.getElement().querySelector(`.film-details__comment-delete`).addEventListener(`click`, this._deleteClickHandler);
+    const deleteButtons = this.getElement().querySelectorAll(`.film-details__comment-delete`);
+
+    for (const button of deleteButtons) {
+      button.addEventListener(`click`, this._deleteClickHandler);
+    }
   }
 
   setFormSubmitHandler(callback) {
@@ -294,24 +301,9 @@ export default class Popup extends Smart {
   static parseDataToFilm(data) {
     data = Object.assign({}, data);
 
-    if (!data.isDueDate) {
-      data.dueDate = null;
-    }
-
-    if (!data.isRepeating) {
-      data.repeating = {
-        mo: false,
-        tu: false,
-        we: false,
-        th: false,
-        fr: false,
-        sa: false,
-        su: false
-      };
-    }
-
-    delete data.isDueDate;
-    delete data.isRepeating;
+    delete data._comments;
+    delete data.selectedEmoji;
+    delete data.newCommentText;
 
     return data;
   }
