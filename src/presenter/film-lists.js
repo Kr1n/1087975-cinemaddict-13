@@ -181,7 +181,7 @@ export default class FilmLists {
     this._renderedFilmCount = newRenderedTaskCount;
 
     if (this._renderedFilmCount >= filmCount) {
-      remove(this._showMoreBtn);
+      remove(this._showMoreButtonComponent);
     }
   }
 
