@@ -65,7 +65,7 @@ export default class Comments extends Abstract {
   constructor(comments) {
     super();
     this._comments = comments;
-    this._callback = [];
+    this._callbacks = [];
 
     this._onDeleteHandler = this._onDeleteHandler.bind(this);
   }
@@ -76,11 +76,11 @@ export default class Comments extends Abstract {
 
   _onDeleteHandler(evt) {
     evt.preventDefault();
-    this._callback.deleteClick();
+    this._callbacks.deleteClick();
   }
 
   setDeleteClickHandler(callback) {
-    this._callback.deleteClick = callback;
+    this._callbacks.deleteClick = callback;
     this.getElement().querySelector(`.film-details__comment-delete`).addEventListener(`click`, this._onDeleteHandler);
   }
 }

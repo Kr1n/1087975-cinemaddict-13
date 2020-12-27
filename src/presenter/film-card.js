@@ -100,7 +100,7 @@ export default class filmCard {
   }
 
   _onFormSubmit() {
-    // console.log(`onFormSubmit`);
+
   }
 
   _onFilmCardClick() {

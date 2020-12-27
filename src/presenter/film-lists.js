@@ -74,8 +74,7 @@ export default class FilmLists {
       if (films.length > FILMS_PER_PAGE) {
         this._renderShowMoreButton();
       }
-      // this._renderTopRated();
-      // this._renderMostCommented();
+
     } else {
       this._renderEmptyLists();
     }

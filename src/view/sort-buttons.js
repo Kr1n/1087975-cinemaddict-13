@@ -14,6 +14,7 @@ export default class SortButtons extends Abstract {
     super();
 
     this._currentSortType = currentSortType;
+    this._callbacks = [];
 
     this._sortTypeChangeHandler = this._sortTypeChangeHandler.bind(this);
   }
@@ -23,7 +24,7 @@ export default class SortButtons extends Abstract {
   }
 
   setSortTypeChangeHandler(callback) {
-    this._callback.sortTypeChange = callback;
+    this._callbacks.sortTypeChange = callback;
     this.getElement().addEventListener(`click`, this._sortTypeChangeHandler);
   }
 
@@ -33,6 +34,6 @@ export default class SortButtons extends Abstract {
     }
 
     evt.preventDefault();
-    this._callback.sortTypeChange(evt.target.dataset.sortType);
+    this._callbacks.sortTypeChange(evt.target.dataset.sortType);
   }
 }
