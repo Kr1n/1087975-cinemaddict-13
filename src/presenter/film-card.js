@@ -4,6 +4,7 @@ import Popup from "../view/popup";
 import {UserAction, UpdateType} from "../consts.js";
 import dayjs from "dayjs";
 
+
 export default class filmCard {
   constructor(container, changeData, openPopup) {
     this._container = container;
@@ -102,26 +103,24 @@ export default class filmCard {
 
   _onCtrlEnterKeyDown(evt) {
     if (evt.ctrlKey && evt.key === `Enter`) {
-      const message = this._popupComponent.getElement().querySelector(`.film-details__comment-input`).value;
-      const author = `author`;
-      const emoji = this._popupComponent.getElement().querySelector(`.film-details__emoji-item[checked]`).value;
-      const date = dayjs();
-      const id = Date.now();
-
-      this._changeData(
-          UserAction.ADD_COMMENT,
-          UpdateType.MINOR,
-          Object.assign({
-            comment: {
-              id,
-              message,
-              author,
-              date,
-              emoji,
-            },
-            film: this._film
-          })
-      );
+      const message = this._popupComponent.getElement().querySelector(`.film-details__comment-input`);
+      const emoji = this._popupComponent.getElement().querySelector(`.film-details__emoji-item[checked]`);
+      if (message.value !== `` && emoji) {
+        this._changeData(
+            UserAction.ADD_COMMENT,
+            UpdateType.MINOR,
+            Object.assign({
+              comment: {
+                id: Date.now(),
+                message: message.value,
+                author: `author`,
+                date: dayjs(),
+                emoji: emoji.value,
+              },
+              film: this._film
+            })
+        );
+      }
     }
   }
 

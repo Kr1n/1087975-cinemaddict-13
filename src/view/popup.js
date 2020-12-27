@@ -1,4 +1,5 @@
 import Smart from "./smart";
+import he from "he";
 
 const createCommentsTemplate = (data) => {
   const commentReducer = (accumulator, {id, message, author, date, emoji}) => {
@@ -8,7 +9,7 @@ const createCommentsTemplate = (data) => {
           <img src="./images/emoji/${emoji}.png" width="55" height="55" alt="emoji-${emoji}">
         </span>
         <div>
-          <p class="film-details__comment-text">${message}</p>
+          <p class="film-details__comment-text">${he.encode(message)}</p>
           <p class="film-details__comment-info">
             <span class="film-details__comment-author">${author}</span>
             <span class="film-details__comment-day">${date.format(`DD/MM/YYYY HH:mm`)}</span>
