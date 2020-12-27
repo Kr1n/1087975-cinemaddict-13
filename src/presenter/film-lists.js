@@ -8,7 +8,7 @@ import {FILMS_IN_TOPRATED_LIST, FILMS_IN_MOSTCOMMENTED_LIST, FILMS_PER_PAGE, Sor
 import MostCommentedFilms from "../view/most-commented-films";
 import EmptyFilmList from "../view/empty-film-list";
 import AllFilms from "../view/all-films";
-import {sortFilmDate, sortFilmRating} from "../utils/film.js";
+import {sortFilmDate, sortFilmRating} from "../utils/films.js";
 import {filter} from "../utils/filter.js";
 
 export default class FilmLists {
