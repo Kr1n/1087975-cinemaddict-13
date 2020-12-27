@@ -50,7 +50,6 @@ export default class Filter extends Abstract {
     }
 
     evt.preventDefault();
-    console.log(evt.target.dataset.filter);
     this._callbacks.filterTypeChange(evt.target.dataset.filter);
   }
 

@@ -2,6 +2,7 @@ import {remove, render, replace, RenderPosition} from "../utils/common";
 import FilmCard from "../view/film-card";
 import Popup from "../view/popup";
 import {UserAction, UpdateType} from "../consts.js";
+import dayjs from "dayjs";
 
 export default class filmCard {
   constructor(container, changeData, openPopup) {
@@ -21,7 +22,7 @@ export default class filmCard {
     this._onEscKeyDown = this._onEscKeyDown.bind(this);
     this._onFilmCardClick = this._onFilmCardClick.bind(this);
     this._onClosePopupClick = this._onClosePopupClick.bind(this);
-    this._onFormSubmit = this._onFormSubmit.bind(this);
+    this._onCtrlEnterKeyDown = this._onCtrlEnterKeyDown.bind(this);
     this._onDeleteClick = this._onDeleteClick.bind(this);
   }
 
@@ -46,7 +47,6 @@ export default class filmCard {
     this._popupComponent.setWatchlistClickHandler(this._onWatchlistClick);
     this._popupComponent.setWatchedClickHandler(this._onWatchedClick);
     this._popupComponent.setCloseButtonHandler(this._onClosePopupClick);
-    this._popupComponent.setFormSubmitHandler(this._onFormSubmit);
     this._popupComponent.setDeleteClickHandler(this._onDeleteClick);
 
     if (prevFilmComponent === null || prevPopupComponent === null) {
@@ -86,6 +86,7 @@ export default class filmCard {
 
     bodyContainer.appendChild(this._popupComponent.getElement());
     document.addEventListener(`keydown`, this._onEscKeyDown);
+    document.addEventListener(`keydown`, this._onCtrlEnterKeyDown);
     document.querySelector(`body`).classList.add(`hide-overflow`);
     this._isPopupOpened = true;
   }
@@ -94,13 +95,34 @@ export default class filmCard {
   _onDeleteClick(comment) {
     this._changeData(
         UserAction.DELETE_COMMENT,
-        UpdateType.PATCH,
+        UpdateType.MINOR,
         comment
     );
   }
 
-  _onFormSubmit() {
+  _onCtrlEnterKeyDown(evt) {
+    if (evt.ctrlKey && evt.key === `Enter`) {
+      const message = this._popupComponent.getElement().querySelector(`.film-details__comment-input`).value;
+      const author = `author`;
+      const emoji = this._popupComponent.getElement().querySelector(`.film-details__emoji-item[checked]`).value;
+      const date = dayjs();
+      const id = Date.now();
 
+      this._changeData(
+          UserAction.ADD_COMMENT,
+          UpdateType.MINOR,
+          Object.assign({
+            comment: {
+              id,
+              message,
+              author,
+              date,
+              emoji,
+            },
+            film: this._film
+          })
+      );
+    }
   }
 
   _onFilmCardClick() {
@@ -163,6 +185,7 @@ export default class filmCard {
   destroy() {
     remove(this._popupComponent);
     document.removeEventListener(`keydown`, this._onEscKeyDown);
+    document.removeEventListener(`keydown`, this._onCtrlEnterKeyDown);
     remove(this._filmCardComponent);
   }
 }

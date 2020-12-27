@@ -41,22 +41,22 @@ const createCommentsTemplate = (data) => {
           </label>
 
           <div class="film-details__emoji-list">
-            <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-smile" value="smile">
+            <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-smile" value="smile" ${selectedEmoji === `smile` ? `checked` : ``}/>
               <label class="film-details__emoji-label" for="emoji-smile">
                 <img src="./images/emoji/smile.png" width="30" height="30" alt="emoji">
               </label>
 
-              <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-sleeping" value="sleeping">
+              <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-sleeping" value="sleeping" ${selectedEmoji === `sleeping` ? `checked` : ``}/>
                 <label class="film-details__emoji-label" for="emoji-sleeping">
                   <img src="./images/emoji/sleeping.png" width="30" height="30" alt="emoji">
                 </label>
 
-                <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-puke" value="puke">
+                <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-puke" value="puke" ${selectedEmoji === `puke` ? `checked` : ``}/>
                   <label class="film-details__emoji-label" for="emoji-puke">
                     <img src="./images/emoji/puke.png" width="30" height="30" alt="emoji">
                   </label>
 
-                  <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-angry" value="angry">
+                  <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-angry" value="angry" ${selectedEmoji === `angry` ? `checked` : ``}/>
                     <label class="film-details__emoji-label" for="emoji-angry">
                       <img src="./images/emoji/angry.png" width="30" height="30" alt="emoji">
                     </label>
@@ -172,7 +172,6 @@ export default class Popup extends Smart {
     this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
     this._watchedClickHandler = this._watchedClickHandler.bind(this);
     this._watchlistClickHandler = this._watchlistClickHandler.bind(this);
-    this._formSubmitHandler = this._formSubmitHandler.bind(this);
 
     this._commentTextInputHandler = this._commentTextInputHandler.bind(this);
     this._emojiChangeHandler = this._emojiChangeHandler.bind(this);
@@ -192,7 +191,6 @@ export default class Popup extends Smart {
 
   restoreHandlers() {
     this._setInnerHandlers();
-    this.setFormSubmitHandler(this._callbacks.formSubmit);
     this.setCloseButtonHandler(this._callbacks.closeButtonClick);
     this.setFavoriteClickHandler(this._callbacks.favoriteClick);
     this.setWatchedClickHandler(this._callbacks.watchedClickHandler);
@@ -242,11 +240,6 @@ export default class Popup extends Smart {
     this._callbacks.deleteClick({comment, film});
   }
 
-  _formSubmitHandler(evt) {
-    evt.preventDefault();
-    this._callbacks.formSubmit();
-  }
-
 
   setCloseButtonHandler(callback) {
     this._callbacks.closeButtonClick = callback;
@@ -275,11 +268,6 @@ export default class Popup extends Smart {
     for (const button of deleteButtons) {
       button.addEventListener(`click`, this._deleteClickHandler);
     }
-  }
-
-  setFormSubmitHandler(callback) {
-    this._callbacks.formSubmit = callback;
-    this.getElement().querySelector(`form`).addEventListener(`submit`, this._formSubmitHandler);
   }
 
   getTemplate() {

@@ -19,7 +19,6 @@ export default class Comments extends Observer {
       update,
       ...this._comments
     ];
-
     this._notify(updateType, update);
   }
 
