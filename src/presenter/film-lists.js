@@ -118,11 +118,15 @@ export default class FilmLists {
 
   _renderContentFilms() {
     const filmCount = this._getFilms().length;
-    const filmsToRender = this._getFilms().slice(0, Math.min(filmCount, FILMS_PER_PAGE));
+    const filmsToRender = this._getFilms().slice(0, Math.min(filmCount, this._renderedFilmCount));
     const container = this._catalogFilms.getElement().querySelector(`.films-list__container`);
 
     render(this._filmsList, this._catalogFilms, RenderPosition.BEFOREEND);
     filmsToRender.forEach((film) => this._renderFilmCard(film, container, this._filmCardPresenters));
+
+    if (this._openedPopupId) {
+      this._filmCardPresenters[this._openedPopupId].showPopup();
+    }
   }
 
   _renderTopRated() {
@@ -242,8 +246,8 @@ export default class FilmLists {
         this._renderFilmsLists();
         break;
       case UpdateType.MAJOR:
-        this._clearFilmList();
-        this._renderFilmsLists({resetRenderedTaskCount: true, resetSortType: true});
+        this._clearFilmList({resetRenderedTaskCount: true, resetSortType: true});
+        this._renderFilmsLists();
         break;
     }
   }

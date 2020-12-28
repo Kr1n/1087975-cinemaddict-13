@@ -180,6 +180,11 @@ export default class Popup extends Smart {
     this._setInnerHandlers();
   }
 
+  resetForm() {
+    delete this._data.selectedEmoji;
+    delete this._data.newCommentText;
+  }
+
   _setInnerHandlers() {
     this.getElement()
       .querySelector(`.film-details__emoji-list`)
