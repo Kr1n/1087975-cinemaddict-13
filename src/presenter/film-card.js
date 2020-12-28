@@ -10,6 +10,7 @@ export default class filmCard {
     this._container = container;
     this._changeData = changeData;
     this._openPopup = openPopup;
+    this._popupScrollTop = 1;
 
     this._popupComponent = null;
     this._filmCardComponent = null;
@@ -61,7 +62,6 @@ export default class filmCard {
       replace(this._popupComponent, prevPopupComponent);
     }
 
-
     remove(prevFilmComponent);
     remove(prevPopupComponent);
   }
@@ -70,15 +70,13 @@ export default class filmCard {
     if (!this._isPopupOpened) {
       return;
     }
-    const bodyContainer = document.querySelector(`body`);
+    this._isPopupOpened = false;
 
+    const bodyContainer = document.querySelector(`body`);
     bodyContainer.removeChild(this._popupComponent.getElement());
-    // this._popupComponent.resetForm();
     document.removeEventListener(`keydown`, this._onEscKeyDown);
     document.removeEventListener(`keydown`, this._onCtrlEnterKeyDown);
     document.querySelector(`body`).classList.remove(`hide-overflow`);
-
-    this._isPopupOpened = false;
   }
 
   showPopup() {
@@ -86,15 +84,23 @@ export default class filmCard {
       return;
     }
     this._openPopup(this._film.id);
-    const bodyContainer = document.querySelector(`body`);
 
+    const bodyContainer = document.querySelector(`body`);
     bodyContainer.appendChild(this._popupComponent.getElement());
     document.addEventListener(`keydown`, this._onEscKeyDown);
     document.addEventListener(`keydown`, this._onCtrlEnterKeyDown);
     document.querySelector(`body`).classList.add(`hide-overflow`);
     this._isPopupOpened = true;
+    this._popupComponent.restoreScrollTop();
   }
 
+  getScrollTop() {
+    this._popupComponent.getScrollTop();
+  }
+
+  setScrollTop(value) {
+    this._popupComponent.setScrollTop(value);
+  }
 
   _onDeleteClick({comment, film}) {
     this._changeData(

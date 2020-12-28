@@ -19,6 +19,7 @@ export default class FilmLists {
     this._filmListsContainer = filmListsContainer;
     this._renderedFilmCount = FILMS_PER_PAGE;
     this._openedPopupId = null;
+    this._popupScrollTop = 0;
 
     this._currentSortType = SortType.DEFAULT;
     this._sortComponent = null;
@@ -87,7 +88,11 @@ export default class FilmLists {
     }
   }
 
-  _clearFilmList({resetRenderedTaskCount = false, resetSortType = false} = {}) {
+  _clearFilmList({resetRenderedFilmCount = false, resetSortType = false} = {}) {
+
+    console.log(this._filmCardPresenters[this._openedPopupId]);
+    debugger;
+    this._popupScrollTop = this._filmCardPresenters[this._openedPopupId].getScrollTop();
     Object
       .values(this._filmCardPresenters)
       .forEach((presenter) => presenter.destroy());
@@ -97,8 +102,10 @@ export default class FilmLists {
     remove(this._sortComponent);
     remove(this._emptyFilmList);
 
-    if (resetRenderedTaskCount) {
+
+    if (resetRenderedFilmCount) {
       this._renderedFilmCount = FILMS_PER_PAGE;
+      this._openedPopupId = null;
     }
 
     if (resetSortType) {
@@ -126,6 +133,7 @@ export default class FilmLists {
 
     if (this._openedPopupId) {
       this._filmCardPresenters[this._openedPopupId].showPopup();
+      this._filmCardPresenters[this._openedPopupId].setScrollTop(this._popupScrollTop);
     }
   }
 
@@ -219,16 +227,14 @@ export default class FilmLists {
         this._filmsModel.updateFilm(updateType, update);
         break;
       case UserAction.ADD_COMMENT:
-        this._commentsModel.addComment(UpdateType.NONE, update.comment);
-
         const film = update.film;
-        film.comments.add(update.comment.id);
 
+        this._commentsModel.addComment(UpdateType.NONE, update.comment);
+        film.comments.add(update.comment.id);
         this._filmsModel.updateFilm(updateType, film);
         break;
       case UserAction.DELETE_COMMENT:
         this._commentsModel.deleteComment(UpdateType.NONE, update.comment);
-
         update.film.comments.delete(Number(update.comment.id));
         this._filmsModel.updateFilm(updateType, update.film);
         break;
@@ -246,7 +252,7 @@ export default class FilmLists {
         this._renderFilmsLists();
         break;
       case UpdateType.MAJOR:
-        this._clearFilmList({resetRenderedTaskCount: true, resetSortType: true});
+        this._clearFilmList({resetRenderedFilmCount: true, resetSortType: true});
         this._renderFilmsLists();
         break;
     }

@@ -168,6 +168,8 @@ export default class Popup extends Smart {
 
     this._data = Popup.convertFilmToData(film, comments);
     this._callbacks = [];
+    this._scrollTop = 0;
+
     this._deleteClickHandler = this._deleteClickHandler.bind(this);
     this._closeButtonHandler = this._closeButtonHandler.bind(this);
     this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
@@ -178,11 +180,15 @@ export default class Popup extends Smart {
     this._emojiChangeHandler = this._emojiChangeHandler.bind(this);
 
     this._setInnerHandlers();
+    this.restoreScrollTop();
   }
 
-  resetForm() {
-    delete this._data.selectedEmoji;
-    delete this._data.newCommentText;
+  getScrollTop() {
+    return this._data.scrollTop;
+  }
+
+  setScrollTop(value) {
+    this._data.scrollTop = value;
   }
 
   _setInnerHandlers() {
@@ -213,9 +219,15 @@ export default class Popup extends Smart {
 
   _emojiChangeHandler(evt) {
     evt.preventDefault();
+    this._scrollTop = this.getElement().scrollTop;
     this.updateData({
       selectedEmoji: evt.target.value
     });
+    this.restoreScrollTop();
+  }
+
+  restoreScrollTop() {
+    this.getElement().scrollTop = this._scrollTop;
   }
 
   _closeButtonHandler(evt) {
@@ -243,6 +255,7 @@ export default class Popup extends Smart {
     const comment = this._data._comments.find((item) => item.id === Number(evt.target.dataset.commentId));
     const film = Popup.convertDataToFilm(this._data);
 
+    this._scrollTop = this.getElement().scrollTop;
     this._callbacks.deleteClick({comment, film});
   }
 
@@ -287,7 +300,7 @@ export default class Popup extends Smart {
         {
           _comments,
           selectedEmoji: null,
-          newCommentText: ``
+          newCommentText: ``,
         }
     );
   }
