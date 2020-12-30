@@ -95,7 +95,7 @@ export default class filmCard {
   }
 
   getScrollTop() {
-    this._popupComponent.getScrollTop();
+    return this._popupComponent.getScrollTop();
   }
 
   setScrollTop(value) {

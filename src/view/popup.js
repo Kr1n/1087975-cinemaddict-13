@@ -180,15 +180,20 @@ export default class Popup extends Smart {
     this._emojiChangeHandler = this._emojiChangeHandler.bind(this);
 
     this._setInnerHandlers();
-    this.restoreScrollTop();
+    this.setScrollTop(this.getScrollTop());
   }
 
   getScrollTop() {
-    return this._data.scrollTop;
+    return this._scrollTop;
   }
 
   setScrollTop(value) {
-    this._data.scrollTop = value;
+    this._scrollTop = value;
+    this.restoreScrollTop();
+  }
+
+  restoreScrollTop() {
+    this.getElement().scrollTop = this._scrollTop;
   }
 
   _setInnerHandlers() {
@@ -226,27 +231,27 @@ export default class Popup extends Smart {
     this.restoreScrollTop();
   }
 
-  restoreScrollTop() {
-    this.getElement().scrollTop = this._scrollTop;
-  }
-
   _closeButtonHandler(evt) {
     evt.preventDefault();
+    this._scrollTop = 0;
     this._callbacks.closeButtonClick();
   }
 
   _favoriteClickHandler(evt) {
     evt.preventDefault();
+    this._scrollTop = this.getElement().scrollTop;
     this._callbacks.favoriteClick();
   }
 
   _watchedClickHandler(evt) {
     evt.preventDefault();
+    this._scrollTop = this.getElement().scrollTop;
     this._callbacks.watchedClickHandler();
   }
 
   _watchlistClickHandler(evt) {
     evt.preventDefault();
+    this._scrollTop = this.getElement().scrollTop;
     this._callbacks.watchlistClickHandler();
   }
 

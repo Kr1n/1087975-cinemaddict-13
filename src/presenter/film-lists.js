@@ -89,9 +89,6 @@ export default class FilmLists {
   }
 
   _clearFilmList({resetRenderedFilmCount = false, resetSortType = false} = {}) {
-
-    console.log(this._filmCardPresenters[this._openedPopupId]);
-    debugger;
     this._popupScrollTop = this._filmCardPresenters[this._openedPopupId].getScrollTop();
     Object
       .values(this._filmCardPresenters)
