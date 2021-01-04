@@ -10,6 +10,7 @@ import EmptyFilmList from "../view/empty-film-list";
 import AllFilms from "../view/all-films";
 import {sortFilmDate, sortFilmRating} from "../utils/films.js";
 import {filter} from "../utils/filter.js";
+import Statistic from "../view/statistic";
 
 export default class FilmLists {
   constructor(filmListsContainer, filmsModel, commentsModel, filterModel) {
@@ -30,10 +31,12 @@ export default class FilmLists {
     this._topRatedFilms = new TopRatedFilms();
     this._mostCommentedFilms = new MostCommentedFilms();
     this._emptyFilmList = new EmptyFilmList();
+    this._statistic = new Statistic();
 
     this._handleViewAction = this._handleViewAction.bind(this);
     this._handleModelEvent = this._handleModelEvent.bind(this);
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
+    this._handlerStatisticClick = this._handlerStatisticClick.bind(this);
     this._onShowMoreBtnClick = this._onShowMoreBtnClick.bind(this);
     this._onPopupOpen = this._onPopupOpen.bind(this);
 
@@ -42,10 +45,13 @@ export default class FilmLists {
     this._filterModel.addObserver(this._handleModelEvent);
   }
 
-  init() {
+  init(navigation) {
+    this._navigation = navigation;
     this._filmCardPresenters = {};
     this._mostCommentedCardPresenters = {};
     this._topRatedCardPresenters = {};
+
+    this._navigation.setStatisticsClickHandler(this._handlerStatisticClick);
 
     this._renderFilmsLists();
   }
@@ -90,7 +96,7 @@ export default class FilmLists {
 
   _clearFilmList({resetRenderedFilmCount = false, resetSortType = false} = {}) {
 
-    if (this._openedPopupId) {
+    if (this._isPopupOpened()) {
       this._popupScrollTop = this._filmCardPresenters[this._openedPopupId].getScrollTop();
     }
 
@@ -102,6 +108,7 @@ export default class FilmLists {
     remove(this._showMoreButtonComponent);
     remove(this._sortComponent);
     remove(this._emptyFilmList);
+    remove(this._statistic);
 
 
     if (resetRenderedFilmCount) {
@@ -112,6 +119,15 @@ export default class FilmLists {
     if (resetSortType) {
       this._currentSortType = SortType.DEFAULT;
     }
+  }
+
+  _isPopupOpened() {
+    for (const key in this._filmCardPresenters) {
+      if (this._filmCardPresenters[key].isPopupOpened()) {
+        return true;
+      }
+    }
+    return false;
   }
 
   _renderSort() {
@@ -189,6 +205,9 @@ export default class FilmLists {
     filmArray[film.id] = filmCardPresenter;
   }
 
+  _renderStatistic() {
+    render(this._filmListsContainer, this._statistic.getElement(), RenderPosition.BEFOREEND);
+  }
 
   _onShowMoreBtnClick() {
     const filmsListContainer = this._filmsList.getElement().querySelector(`.films-list__container`);
@@ -210,6 +229,12 @@ export default class FilmLists {
       this._filmCardPresenters[this._openedPopupId].closePopup();
     }
     this._openedPopupId = filmId;
+  }
+
+  _handlerStatisticClick() {
+    this._clearFilmList();
+    this._filterModel.setFilter(null);
+    this._renderStatistic();
   }
 
   _handleSortTypeChange(sortType) {

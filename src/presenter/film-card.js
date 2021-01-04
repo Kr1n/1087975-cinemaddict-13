@@ -66,6 +66,10 @@ export default class filmCard {
     remove(prevPopupComponent);
   }
 
+  isPopupOpened() {
+    return this._isPopupOpened;
+  }
+
   closePopup() {
     if (!this._isPopupOpened) {
       return;

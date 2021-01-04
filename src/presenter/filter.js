@@ -29,7 +29,7 @@ export default class Filter {
     this._filterComponent.setFilterTypeChangeHandler(this._handleFilterTypeChange);
 
     if (prevFilterComponent === null) {
-      render(this._filterContainer, this._filterComponent, RenderPosition.BEFOREEND);
+      render(this._filterContainer, this._filterComponent, RenderPosition.AFTERBEGIN);
       return;
     }
 

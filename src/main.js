@@ -3,6 +3,7 @@ import {render, RenderPosition} from "./utils/common";
 import {generateFilm} from "./mock/film";
 import {generateComment} from "./mock/comment";
 import Profile from "./view/profile";
+import Navigation from "./view/navigation";
 import FooterStatistics from "./view/footer";
 import FilmListsPresenter from "./presenter/film-lists";
 import FilterPresentor from "./presenter/filter";
@@ -26,16 +27,19 @@ const mainContainer = document.querySelector(`.main`);
 const footerStatisticsContainer = document.querySelector(`.footer`);
 
 const profile = new Profile(films);
+const navigation = new Navigation();
 const footerStatistics = new FooterStatistics(films);
 const filmListsPresentor = new FilmListsPresenter(mainContainer, filmsModel, commentsModel, filterModel);
-const filterPresenter = new FilterPresentor(mainContainer, filterModel, filmsModel);
+const filterPresenter = new FilterPresentor(navigation.getElement(), filterModel, filmsModel);
 
 
 if (films.length) {
   render(headerContainer, profile, RenderPosition.BEFOREEND);
 }
+render(mainContainer, navigation, RenderPosition.BEFOREEND);
+
 filterPresenter.init();
-filmListsPresentor.init();
+filmListsPresentor.init(navigation);
 
 render(footerStatisticsContainer, footerStatistics, RenderPosition.BEFOREEND);
 

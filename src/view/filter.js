@@ -20,12 +20,9 @@ const createFiltersTemplate = (filterItems, currentFilterType) => {
     .map((filter) => createFilterItemTemplate(filter, currentFilterType))
     .join(``);
 
-  return `<nav class="main-navigation">
-    <div class="main-navigation__items">
+  return `<div class="main-navigation__items">
       ${filterItemsTemplate}
-    </div>
-    <a href="#stats" class="main-navigation__additional">Stats</a>
-  </nav>`;
+    </div>`;
 };
 
 
