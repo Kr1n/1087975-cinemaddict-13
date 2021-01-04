@@ -31,7 +31,6 @@ export default class FilmLists {
     this._topRatedFilms = new TopRatedFilms();
     this._mostCommentedFilms = new MostCommentedFilms();
     this._emptyFilmList = new EmptyFilmList();
-    this._statistic = new Statistic();
 
     this._handleViewAction = this._handleViewAction.bind(this);
     this._handleModelEvent = this._handleModelEvent.bind(this);
@@ -108,7 +107,9 @@ export default class FilmLists {
     remove(this._showMoreButtonComponent);
     remove(this._sortComponent);
     remove(this._emptyFilmList);
-    remove(this._statistic);
+    if (this._statistic) {
+      remove(this._statistic);
+    }
 
 
     if (resetRenderedFilmCount) {
@@ -206,7 +207,9 @@ export default class FilmLists {
   }
 
   _renderStatistic() {
-    render(this._filmListsContainer, this._statistic.getElement(), RenderPosition.BEFOREEND);
+    const allFilms = this._filmsModel.getFilms();
+    this._statistic = new Statistic(allFilms);
+    render(this._filmListsContainer, this._statistic, RenderPosition.BEFOREEND);
   }
 
   _onShowMoreBtnClick() {
