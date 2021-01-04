@@ -89,7 +89,11 @@ export default class FilmLists {
   }
 
   _clearFilmList({resetRenderedFilmCount = false, resetSortType = false} = {}) {
-    this._popupScrollTop = this._filmCardPresenters[this._openedPopupId].getScrollTop();
+
+    if (this._openedPopupId) {
+      this._popupScrollTop = this._filmCardPresenters[this._openedPopupId].getScrollTop();
+    }
+
     Object
       .values(this._filmCardPresenters)
       .forEach((presenter) => presenter.destroy());
