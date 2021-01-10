@@ -3,6 +3,7 @@ import FilmCard from "../view/film-card";
 import Popup from "../view/popup";
 import {UserAction, UpdateType} from "../consts.js";
 import dayjs from "dayjs";
+import Comments from "../view/comments";
 
 
 export default class filmCard {
@@ -10,7 +11,6 @@ export default class filmCard {
     this._container = container;
     this._changeData = changeData;
     this._openPopup = openPopup;
-    this._popupScrollTop = 1;
 
     this._popupComponent = null;
     this._filmCardComponent = null;
@@ -39,6 +39,7 @@ export default class filmCard {
 
     this._filmCardComponent = new FilmCard(this._film);
     this._popupComponent = new Popup(this._film, popupComments);
+    this._commentsComponent = new Comments();
 
     this._filmCardComponent.setClickPosterHandler(this._onFilmCardClick);
     this._filmCardComponent.setFavoriteClickHandler(this._onFavoriteClick);
@@ -50,6 +51,7 @@ export default class filmCard {
     this._popupComponent.setWatchedClickHandler(this._onWatchedClick);
     this._popupComponent.setCloseButtonHandler(this._onClosePopupClick);
     this._popupComponent.setDeleteClickHandler(this._onDeleteClick);
+
 
     if (prevFilmComponent === null || prevPopupComponent === null) {
       render(this._container, this._filmCardComponent, RenderPosition.BEFOREEND);

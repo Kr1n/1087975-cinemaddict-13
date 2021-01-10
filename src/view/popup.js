@@ -1,36 +1,15 @@
 import Smart from "./smart";
-import he from "he";
 import dayjs from "dayjs";
 
 const createCommentsTemplate = (data) => {
-  const commentReducer = (accumulator, {id, message, author, date, emoji}) => {
-    accumulator += `
-      <li class="film-details__comment">
-        <span class="film-details__comment-emoji">
-          <img src="./images/emoji/${emoji}.png" width="55" height="55" alt="emoji-${emoji}">
-        </span>
-        <div>
-          <p class="film-details__comment-text">${he.encode(message)}</p>
-          <p class="film-details__comment-info">
-            <span class="film-details__comment-author">${author}</span>
-            <span class="film-details__comment-day">${date.format(`DD/MM/YYYY HH:mm`)}</span>
-            <button class="film-details__comment-delete" data-comment-id="${id}">Delete</button>
-          </p>
-        </div>
-      </li>
-    `;
-    return accumulator;
-  };
-
   const {_comments, selectedEmoji, newCommentText} = data;
-  const commentsElements = _comments.reduce(commentReducer, ``);
 
   return `<div class="film-details__bottom-container">
         <section class="film-details__comments-wrap">
         <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${_comments.length}</span></h3>
 
         <ul class="film-details__comments-list">
-          ${commentsElements}
+
         </ul>
 
         <div class="film-details__new-comment">

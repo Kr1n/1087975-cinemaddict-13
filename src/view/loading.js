@@ -1,9 +1,7 @@
 import AbstractView from "./abstract.js";
 
 const createNoTaskTemplate = () => {
-  return `<p class="films-list--loading">
-    Loading...
-  </p>`;
+  return `<p>Loading...</p>`;
 };
 
 export default class Loading extends AbstractView {
