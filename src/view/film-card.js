@@ -1,16 +1,18 @@
 import Abstract from "./abstract";
+import dayjs from "dayjs";
 
 const createFilmCardTemplate = (film) => {
   let template = ``;
+
   if (film) {
     const {title, rating, genre, releaseDate, poster, description, comments, duration: {hours, minutes}, isWatched, isFavorite, inWatchlist} = film;
     let shortDescription = (description.length > 140) ? description.substring(0, 139) + `...` : description;
-
+    const date = dayjs(releaseDate);
     template = `<article class="film-card">
       <h3 class="film-card__title">${title}</h3>
       <p class="film-card__rating">${rating}</p>
       <p class="film-card__info">
-        <span class="film-card__year">${releaseDate.year()}</span>
+        <span class="film-card__year">${date.year()}</span>
         <span class="film-card__duration">${hours}h ${minutes}m</span>
         <span class="film-card__genre">${genre}</span>
       </p>

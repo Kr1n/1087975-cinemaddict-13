@@ -1,5 +1,6 @@
 import Smart from "./smart";
 import he from "he";
+import dayjs from "dayjs";
 
 const createCommentsTemplate = (data) => {
   const commentReducer = (accumulator, {id, message, author, date, emoji}) => {
@@ -70,6 +71,8 @@ const createCommentsTemplate = (data) => {
 const createFilmDetailsTemplate = (data) => {
   const {releaseDate, poster, ageLimit, title, rating, director, writers, actors, duration: {hours, minutes}, country, genres, description, inWatchlist, isFavorite, isWatched} = data;
 
+  const date = dayjs(releaseDate);
+
   const genresElement = Array.from(genres).reduce(
       (accumulator, item) => `${accumulator}<span class="film-details__genre">${item}</span>`,
       ``);
@@ -112,7 +115,7 @@ const createFilmDetailsTemplate = (data) => {
           </tr>
           <tr class="film-details__row">
             <td class="film-details__term">Release Date</td>
-            <td class="film-details__cell">${releaseDate.format(`D MMMM YYYY`)}</td>
+            <td class="film-details__cell">${date.format(`D MMMM YYYY`)}</td>
           </tr>
           <tr class="film-details__row">
             <td class="film-details__term">Runtime</td>

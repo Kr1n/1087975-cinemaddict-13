@@ -11,13 +11,17 @@ import AllFilms from "../view/all-films";
 import {sortFilmDate, sortFilmRating} from "../utils/films.js";
 import {filter} from "../utils/filter.js";
 import Statistic from "../view/statistic";
+import Profile from "../view/profile";
+import FooterStatistics from "../view/footer";
+import Loading from "../view/loading";
 
 export default class FilmLists {
-  constructor(filmListsContainer, filmsModel, commentsModel, filterModel) {
+  constructor(filmListsContainer, filmsModel, commentsModel, filterModel, api) {
     this._filmsModel = filmsModel;
     this._commentsModel = commentsModel;
     this._filterModel = filterModel;
     this._filmListsContainer = filmListsContainer;
+    this._api = api;
     this._renderedFilmCount = FILMS_PER_PAGE;
     this._openedPopupId = null;
     this._popupScrollTop = 0;
@@ -31,6 +35,7 @@ export default class FilmLists {
     this._topRatedFilms = new TopRatedFilms();
     this._mostCommentedFilms = new MostCommentedFilms();
     this._emptyFilmList = new EmptyFilmList();
+    this._loadingComponent = new Loading();
 
     this._handleViewAction = this._handleViewAction.bind(this);
     this._handleModelEvent = this._handleModelEvent.bind(this);
@@ -49,6 +54,7 @@ export default class FilmLists {
     this._filmCardPresenters = {};
     this._mostCommentedCardPresenters = {};
     this._topRatedCardPresenters = {};
+    this._isLoading = true;
 
     this._navigation.setStatisticsClickHandler(this._handlerStatisticClick);
 
@@ -75,8 +81,14 @@ export default class FilmLists {
   }
 
   _renderFilmsLists() {
+    if (this._isLoading) {
+      this._renderLoading();
+      return;
+    }
+
     const films = this._getFilms();
 
+    this._renderProfile();
     this._renderSort();
     render(this._filmListsContainer, this._filmsList, RenderPosition.BEFOREEND);
 
@@ -91,6 +103,8 @@ export default class FilmLists {
     } else {
       this._renderEmptyLists();
     }
+
+    this._renderFooterStatistic();
   }
 
   _clearFilmList({resetRenderedFilmCount = false, resetSortType = false} = {}) {
@@ -106,11 +120,12 @@ export default class FilmLists {
 
     remove(this._showMoreButtonComponent);
     remove(this._sortComponent);
+    remove(this._footerStatistics);
+    remove(this._profile);
     remove(this._emptyFilmList);
     if (this._statistic) {
       remove(this._statistic);
     }
-
 
     if (resetRenderedFilmCount) {
       this._renderedFilmCount = FILMS_PER_PAGE;
@@ -129,6 +144,29 @@ export default class FilmLists {
       }
     }
     return false;
+  }
+
+  _renderLoading() {
+    render(this._filmListsContainer, this._loadingComponent, RenderPosition.BEFOREEND);
+  }
+
+  _renderProfile() {
+    const films = this._filmsModel.getFilms();
+    this._profile = new Profile(films);
+
+    const headerContainer = document.querySelector(`.header`);
+
+    if (films.length) {
+      render(headerContainer, this._profile, RenderPosition.BEFOREEND);
+    }
+  }
+
+  _renderFooterStatistic() {
+    const films = this._filmsModel.getFilms();
+    this._footerStatistics = new FooterStatistics(films);
+
+    const footerStatisticsContainer = document.querySelector(`.footer`);
+    render(footerStatisticsContainer, this._footerStatistics, RenderPosition.BEFOREEND);
   }
 
   _renderSort() {
@@ -200,8 +238,9 @@ export default class FilmLists {
 
   _renderFilmCard(film, container, filmArray) {
     const filmCardPresenter = new FilmCardPresenter(container, this._handleViewAction, this._onPopupOpen);
-    const popupComments = this._getComments().filter((item) => (film).comments.has(item.id));
-
+    // todo Доделать комменатрии
+    //  const popupComments = this._getComments().filter((item) => (film).comments.has(item.id));
+    const popupComments = [];
     filmCardPresenter.init(film, popupComments);
     filmArray[film.id] = filmCardPresenter;
   }
@@ -253,7 +292,9 @@ export default class FilmLists {
   _handleViewAction(actionType, updateType, update) {
     switch (actionType) {
       case UserAction.UPDATE_FILM:
-        this._filmsModel.updateFilm(updateType, update);
+        this._api.updateFilm(update).then((response) => {
+          this._filmsModel.updateFilm(updateType, response);
+        });
         break;
       case UserAction.ADD_COMMENT:
         const film = update.film;
@@ -282,6 +323,11 @@ export default class FilmLists {
         break;
       case UpdateType.MAJOR:
         this._clearFilmList({resetRenderedFilmCount: true, resetSortType: true});
+        this._renderFilmsLists();
+        break;
+      case UpdateType.INIT:
+        this._isLoading = false;
+        remove(this._loadingComponent);
         this._renderFilmsLists();
         break;
     }

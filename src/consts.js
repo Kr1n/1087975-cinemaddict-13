@@ -4,6 +4,10 @@ export const FILMS_PER_PAGE = 5;
 export const FILMS_IN_TOPRATED_LIST = 2;
 export const FILMS_IN_MOSTCOMMENTED_LIST = 2;
 
+export const AUTHORIZATION = `Basic adghj4gui6g`;
+export const END_POINT = `https://13.ecmascript.pages.academy/cinemaddict`;
+
+
 export const SortType = {
   DEFAULT: `default`,
   DATE: `date`,
@@ -20,7 +24,8 @@ export const UpdateType = {
   NONE: `NONE`,
   PATCH: `PATCH`,
   MINOR: `MINOR`,
-  MAJOR: `MAJOR`
+  MAJOR: `MAJOR`,
+  INIT: `INIT`
 };
 
 export const FilterType = {

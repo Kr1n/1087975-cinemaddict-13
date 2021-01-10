@@ -72,7 +72,6 @@ const renderGenreChart = (statisticCtx, data) => {
 };
 
 const creatStatisticTemplate = (films, data) => {
-
   const watchedFilms = getWatchedFilms(films);
   const genres = getAllGenres(watchedFilms);
   for (const genre of genres) {
