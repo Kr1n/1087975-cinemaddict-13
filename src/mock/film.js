@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import {getRandomInteger} from "../utils";
+import {getRandomInteger} from "../utils/common";
 
 let currentId = 1;
 
@@ -115,22 +115,22 @@ const generateComments = () => {
 export const generateFilm = () => {
   return {
     id: currentId++,
-    poster: `./images/posters/made-for-each-other.png`,
-    title: generateTitle(),
-    originalTitle: generateTitle(),
-    rating: getRandomInteger(1, 10),
-    director: generateDirector(),
-    writers: generateWriters(),
     actors: generateActors(),
-    country: generateCountry(),
-    genres: generateGenres(),
-    description: generateDescription(),
     ageLimit: generateAgeLimit(),
+    originalTitle: generateTitle(),
+    description: generateDescription(),
+    director: generateDirector(),
+    genres: generateGenres(),
+    poster: `./images/posters/made-for-each-other.png`,
+    releaseDate: dayjs().add(getRandomInteger(-1, -365 * 20), `day`),
+    country: generateCountry(),
     duration: {
       hours: getRandomInteger(0, 2),
       minutes: getRandomInteger(0, 59)
     },
-    releaseDate: dayjs().add(getRandomInteger(-1, -365 * 20), `day`),
+    title: generateTitle(),
+    rating: getRandomInteger(1, 10),
+    writers: generateWriters(),
     comments: generateComments(),
     inWatchlist: Boolean(getRandomInteger(0, 1)),
     isWatched: Boolean(getRandomInteger(0, 1)),

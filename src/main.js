@@ -1,29 +1,41 @@
-import {MOCK_FILMS_COUNT, MOCK_COMMENTS_COUNT} from "./consts";
-import {render, RenderPosition} from "./utils";
-import {generateFilm} from "./mock/film";
+import {MOCK_COMMENTS_COUNT, AUTHORIZATION, END_POINT, UpdateType} from "./consts";
+import {render, RenderPosition} from "./utils/common";
 import {generateComment} from "./mock/comment";
 import Navigation from "./view/navigation";
-import Profile from "./view/profile";
-import FooterStatistics from "./view/footer";
-import FilmListsPesenter from "./presenter/film-lists";
+import FilmListsPresenter from "./presenter/film-lists";
+import FilterPresentor from "./presenter/filter";
+import FilmsModel from "./model/films";
+import CommentsModel from "./model/comments";
+import FilterModel from "./model/filter";
+import Api from "./api";
 
-const films = new Array(MOCK_FILMS_COUNT).fill().map(generateFilm);
+const api = new Api(END_POINT, AUTHORIZATION);
 const comments = new Array(MOCK_COMMENTS_COUNT).fill().map(generateComment);
 
-const headerContainer = document.querySelector(`.header`);
-const mainContainer = document.querySelector(`.main`);
-const footerStatisticsContainer = document.querySelector(`.footer`);
+const filterModel = new FilterModel();
+const filmsModel = new FilmsModel();
 
-const navigation = new Navigation(films);
-const profile = new Profile(films);
-const footerStatistics = new FooterStatistics(films);
-const filmListsPresentor = new FilmListsPesenter(mainContainer);
+const commentsModel = new CommentsModel();
+commentsModel.setComments(comments);
+
+const mainContainer = document.querySelector(`.main`);
+
+const navigation = new Navigation();
+
+const filmListsPresentor = new FilmListsPresenter(mainContainer, filmsModel, commentsModel, filterModel, api);
+const filterPresenter = new FilterPresentor(navigation.getElement(), filterModel, filmsModel);
 
 render(mainContainer, navigation, RenderPosition.BEFOREEND);
-if (films.length) {
-  render(headerContainer, profile, RenderPosition.BEFOREEND);
-}
-filmListsPresentor.init(films, comments);
 
-render(footerStatisticsContainer, footerStatistics, RenderPosition.BEFOREEND);
+filterPresenter.init();
+filmListsPresentor.init(navigation);
+
+
+api.getFilms()
+  .then((films) => {
+    filmsModel.setFilms(UpdateType.INIT, films);
+
+  });
+// .catch(() => {    filmsModel.setFilms(UpdateType.INIT, []);  });
+
 
