@@ -1,7 +1,7 @@
 import Smart from "./smart";
 
 const createNewCommentTemplate = (data) => {
-  const {selectedEmoji, newCommentText} = data;
+  const {selectedEmoji, newCommentText, isDisabled} = data;
 
   return `<div class="film-details__new-comment">
           <div class="film-details__add-emoji-label">
@@ -9,26 +9,26 @@ const createNewCommentTemplate = (data) => {
         </div>
 
           <label class="film-details__comment-label">
-            <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment">${newCommentText}</textarea>
+            <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment"  ${isDisabled ? `disabled` : ``}>${newCommentText}</textarea>
           </label>
 
           <div class="film-details__emoji-list">
-            <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-smile" value="smile" ${selectedEmoji === `smile` ? `checked` : ``}/>
+            <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-smile" value="smile" ${selectedEmoji === `smile` ? `checked` : ``}  ${isDisabled ? `disabled` : ``}/>
               <label class="film-details__emoji-label" for="emoji-smile">
                 <img src="./images/emoji/smile.png" width="30" height="30" alt="emoji">
               </label>
 
-              <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-sleeping" value="sleeping" ${selectedEmoji === `sleeping` ? `checked` : ``}/>
+              <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-sleeping" value="sleeping" ${selectedEmoji === `sleeping` ? `checked` : ``}  ${isDisabled ? `disabled` : ``}/>
                 <label class="film-details__emoji-label" for="emoji-sleeping">
                   <img src="./images/emoji/sleeping.png" width="30" height="30" alt="emoji">
                 </label>
 
-                <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-puke" value="puke" ${selectedEmoji === `puke` ? `checked` : ``}/>
+                <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-puke" value="puke" ${selectedEmoji === `puke` ? `checked` : ``} ${isDisabled ? `disabled` : ``}/>
                   <label class="film-details__emoji-label" for="emoji-puke">
                     <img src="./images/emoji/puke.png" width="30" height="30" alt="emoji">
                   </label>
 
-                  <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-angry" value="angry" ${selectedEmoji === `angry` ? `checked` : ``}/>
+                  <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-angry" value="angry" ${selectedEmoji === `angry` ? `checked` : ``} ${isDisabled ? `disabled` : ``}/>
                     <label class="film-details__emoji-label" for="emoji-angry">
                       <img src="./images/emoji/angry.png" width="30" height="30" alt="emoji">
                     </label>
@@ -40,12 +40,16 @@ export default class NewComment extends Smart {
   constructor() {
     super();
 
-    this._data = {selectedEmoji: null, newCommentText: ``};
+    this._data = {selectedEmoji: null, newCommentText: ``, isDisabled: false};
 
     this._commentTextInputHandler = this._commentTextInputHandler.bind(this);
     this._emojiChangeHandler = this._emojiChangeHandler.bind(this);
 
     this._setInnerHandlers();
+  }
+
+  setFormDisabled(state) {
+    this.updateData({isDisabled: state});
   }
 
   _setInnerHandlers() {

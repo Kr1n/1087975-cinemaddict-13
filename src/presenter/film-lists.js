@@ -2,7 +2,7 @@ import {remove, render, RenderPosition} from "../utils/common";
 import SortButtons from "../view/sort-buttons";
 import ShowMore from "../view/show-more";
 import FilmsList from "../view/films-list";
-import FilmCardPresenter from "./film-card";
+import FilmCardPresenter, {State as FilmPresenterViewState} from "./film-card";
 import TopRatedFilms from "../view/top-rated-films";
 import {FILMS_IN_TOPRATED_LIST, FILMS_IN_MOSTCOMMENTED_LIST, FILMS_PER_PAGE, SortType, UpdateType, UserAction} from "../consts";
 import MostCommentedFilms from "../view/most-commented-films";
@@ -271,9 +271,8 @@ export default class FilmLists {
     this._openedPopupId = filmId;
 
     this._api.getComments(filmId)
-      .then((response) => {
-        this._commentsModel.setComments(UpdateType.PATCH, {comments: response, id: filmId});
-      });
+      .then((response) => this._commentsModel.setComments(UpdateType.PATCH, {comments: response, id: filmId}))
+      .catch(() => this._filmCardPresenters[filmId].setViewState(FilmPresenterViewState.ABORTING));
   }
 
   _handlerStatisticClick() {
@@ -295,18 +294,24 @@ export default class FilmLists {
   _handleViewAction(actionType, updateType, update) {
     switch (actionType) {
       case UserAction.UPDATE_FILM:
-        this._api.updateFilm(update).then((response) => {
-          this._filmsModel.updateFilm(updateType, response);
-        });
+        this._api.updateFilm(update)
+          .then((response) => this._filmsModel.updateFilm(updateType, response))
+          .catch(() => this._filmCardPresenters[update.id].setViewState(FilmPresenterViewState.ABORTING));
         break;
+
       case UserAction.ADD_COMMENT:
-        this._api.addComment(update.comment, update.film.id)
-          .then((response) => this._filmsModel.updateFilm(updateType, response));
+        this._filmCardPresenters[update.id].setViewState(FilmPresenterViewState.ADDING);
+        this._api.addComment(update.comment, update.id)
+          .then((response) => this._filmsModel.updateFilm(updateType, response))
+          .catch(() => this._filmCardPresenters[update.id].setViewState(FilmPresenterViewState.ABORTING));
         break;
+
       case UserAction.DELETE_COMMENT:
+        this._filmCardPresenters[update.id].setViewState(FilmPresenterViewState.DELETING, update.id);
         this._api.deleteComment(update.comment.id)
           .then(() => this._api.getFilms())
-          .then((response) => this._filmsModel.setFilms(UpdateType.MINOR, response));
+          .then((response) => this._filmsModel.setFilms(UpdateType.MINOR, response))
+          .catch(() => this._filmCardPresenters[update.id].setViewState(FilmPresenterViewState.ABORTING));
         break;
     }
   }

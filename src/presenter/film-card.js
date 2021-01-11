@@ -7,6 +7,12 @@ import Comments from "../view/comments";
 import Loading from "../view/loading";
 import NewComment from "../view/newComment";
 
+export const State = {
+  ADDING: `ADDING`,
+  DELETING: `DELETING`,
+  ABORTING: `ABORTING`
+};
+
 export default class filmCard {
   constructor(container, changeData, openPopup) {
     this._container = container;
@@ -79,6 +85,28 @@ export default class filmCard {
     remove(prevPopupComponent);
   }
 
+  setViewState(state, data) {
+    const resetFormState = () => {
+
+      if (this._commentsComponent) {
+        this._commentsComponent.setButtonsDisabled(false);
+      }
+      this._newCommnetComponent.setFormDisabled(false);
+    };
+
+    switch (state) {
+      case State.ADDING:
+        this._newCommnetComponent.setFormDisabled(true);
+        break;
+      case State.DELETING:
+        this._commentsComponent.setButtonsDisabled(true, data);
+        break;
+      case State.ABORTING:
+        this._popupComponent.shake(resetFormState);
+        break;
+    }
+  }
+
   isPopupOpened() {
     return this._isPopupOpened;
   }
@@ -89,7 +117,9 @@ export default class filmCard {
     }
     this._isPopupOpened = false;
     this._comments = null;
-    remove(this._commentsComponent);
+    if (this._commentsComponent) {
+      remove(this._commentsComponent);
+    }
 
     const bodyContainer = document.querySelector(`body`);
     bodyContainer.removeChild(this._popupComponent.getElement());
@@ -146,7 +176,7 @@ export default class filmCard {
                 date: dayjs().toISOString(),
                 emotion: emotion.value,
               },
-              film: this._film
+              id: this._film.id
             })
         );
       }
