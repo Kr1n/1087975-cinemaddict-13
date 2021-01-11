@@ -43,7 +43,6 @@ export default class Comments extends Abstract {
     evt.preventDefault();
 
     const comment = this._comments.find((item) => item.id === evt.target.dataset.commentId);
-    this._scrollTop = this.getElement().scrollTop;
     this._callbacks.deleteClick(comment);
   }
 

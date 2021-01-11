@@ -312,14 +312,18 @@ export default class FilmLists {
   }
 
   _handleModelEvent(updateType, data) {
+    this._saveScrollTop();
+
     switch (updateType) {
       case UpdateType.PATCH:
         const film = this._getFilms()[data.id];
         this._filmCardPresenters[data.id].init(film, this._getComments());
+        this._restoreScrollTop();
         break;
       case UpdateType.MINOR:
         this._clearFilmList();
         this._renderFilmsLists();
+        this._restoreScrollTop();
         break;
       case UpdateType.MAJOR:
         this._clearFilmList({resetRenderedFilmCount: true, resetSortType: true});
@@ -331,6 +335,16 @@ export default class FilmLists {
         this._renderFilmsLists();
         break;
     }
+  }
+
+  _saveScrollTop() {
+    if (this._openedPopupId) {
+      this._popupScrollTop = this._filmCardPresenters[this._openedPopupId].getScrollTop();
+    }
+  }
+
+  _restoreScrollTop() {
+    this._filmCardPresenters[this._openedPopupId].setScrollTop(this._popupScrollTop);
   }
 }
 

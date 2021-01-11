@@ -118,27 +118,19 @@ export default class Popup extends Abstract {
 
     this._film = film;
     this._callbacks = [];
-    this._scrollTop = 0;
 
     this._closeButtonHandler = this._closeButtonHandler.bind(this);
     this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
     this._watchedClickHandler = this._watchedClickHandler.bind(this);
     this._watchlistClickHandler = this._watchlistClickHandler.bind(this);
-
-    this.setScrollTop(this.getScrollTop());
   }
 
   getScrollTop() {
-    return this._scrollTop;
+    return this.getElement().scrollTop;
   }
 
   setScrollTop(value) {
-    this._scrollTop = value;
-    this.restoreScrollTop();
-  }
-
-  restoreScrollTop() {
-    this.getElement().scrollTop = this._scrollTop;
+    this.getElement().scrollTop = value;
   }
 
   _closeButtonHandler(evt) {

@@ -88,6 +88,8 @@ export default class filmCard {
       return;
     }
     this._isPopupOpened = false;
+    this._comments = null;
+    remove(this._commentsComponent);
 
     const bodyContainer = document.querySelector(`body`);
     bodyContainer.removeChild(this._popupComponent.getElement());
@@ -105,11 +107,13 @@ export default class filmCard {
     const bodyContainer = document.querySelector(`body`);
     bodyContainer.appendChild(this._popupComponent.getElement());
 
+    const commentContainer = this._popupComponent.getElement().querySelector(`.film-details__comments-list`);
+    commentContainer.appendChild(this._loadingComponent.getElement());
+
     document.addEventListener(`keydown`, this._onEscKeyDown);
     document.addEventListener(`keydown`, this._onCtrlEnterKeyDown);
     document.querySelector(`body`).classList.add(`hide-overflow`);
     this._isPopupOpened = true;
-    this._popupComponent.restoreScrollTop();
   }
 
   getScrollTop() {
