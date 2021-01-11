@@ -187,7 +187,7 @@ export default class FilmLists {
     render(this._filmsList, this._catalogFilms, RenderPosition.BEFOREEND);
     filmsToRender.forEach((film) => this._renderFilmCard(film, container, this._filmCardPresenters));
 
-    if (this._openedPopupId) {
+    if (this._openedPopupId !== null) {
       this._filmCardPresenters[this._openedPopupId].showPopup();
       this._filmCardPresenters[this._openedPopupId].setScrollTop(this._popupScrollTop);
     }
@@ -238,10 +238,8 @@ export default class FilmLists {
 
   _renderFilmCard(film, container, filmArray) {
     const filmCardPresenter = new FilmCardPresenter(container, this._handleViewAction, this._onPopupOpen);
-    // todo Доделать комменатрии
-    //  const popupComments = this._getComments().filter((item) => (film).comments.has(item.id));
-    const popupComments = [];
-    filmCardPresenter.init(film, popupComments);
+
+    filmCardPresenter.init(film);
     filmArray[film.id] = filmCardPresenter;
   }
 
@@ -271,6 +269,11 @@ export default class FilmLists {
       this._filmCardPresenters[this._openedPopupId].closePopup();
     }
     this._openedPopupId = filmId;
+
+    this._api.getComments(filmId)
+      .then((response) => {
+        this._commentsModel.setComments(UpdateType.PATCH, {comments: response, id: filmId});
+      });
   }
 
   _handlerStatisticClick() {
@@ -297,16 +300,13 @@ export default class FilmLists {
         });
         break;
       case UserAction.ADD_COMMENT:
-        const film = update.film;
-
-        this._commentsModel.addComment(UpdateType.NONE, update.comment);
-        film.comments.add(update.comment.id);
-        this._filmsModel.updateFilm(updateType, film);
+        this._api.addComment(update.comment, update.film.id)
+          .then((response) => this._filmsModel.updateFilm(updateType, response));
         break;
       case UserAction.DELETE_COMMENT:
-        this._commentsModel.deleteComment(UpdateType.NONE, update.comment);
-        update.film.comments.delete(Number(update.comment.id));
-        this._filmsModel.updateFilm(updateType, update.film);
+        this._api.deleteComment(update.comment.id)
+          .then(() => this._api.getFilms())
+          .then((response) => this._filmsModel.setFilms(UpdateType.MINOR, response));
         break;
     }
   }
@@ -314,8 +314,8 @@ export default class FilmLists {
   _handleModelEvent(updateType, data) {
     switch (updateType) {
       case UpdateType.PATCH:
-        const popupComments = this._getComments().filter((item) => (data).comments.has(item.id));
-        this._filmCardPresenters[data.id].init(data, popupComments);
+        const film = this._getFilms()[data.id];
+        this._filmCardPresenters[data.id].init(film, this._getComments());
         break;
       case UpdateType.MINOR:
         this._clearFilmList();

@@ -4,7 +4,8 @@ import Popup from "../view/popup";
 import {UserAction, UpdateType} from "../consts.js";
 import dayjs from "dayjs";
 import Comments from "../view/comments";
-
+import Loading from "../view/loading";
+import NewComment from "../view/newComment";
 
 export default class filmCard {
   constructor(container, changeData, openPopup) {
@@ -34,12 +35,10 @@ export default class filmCard {
 
     this._film = film;
     this._comments = comments;
-
-    const popupComments = this._comments.filter((item) => (this._film).comments.has(item.id));
-
     this._filmCardComponent = new FilmCard(this._film);
-    this._popupComponent = new Popup(this._film, popupComments);
-    this._commentsComponent = new Comments();
+    this._popupComponent = new Popup(this._film);
+    this._loadingComponent = new Loading();
+    this._newCommnetComponent = new NewComment();
 
     this._filmCardComponent.setClickPosterHandler(this._onFilmCardClick);
     this._filmCardComponent.setFavoriteClickHandler(this._onFavoriteClick);
@@ -50,8 +49,20 @@ export default class filmCard {
     this._popupComponent.setWatchlistClickHandler(this._onWatchlistClick);
     this._popupComponent.setWatchedClickHandler(this._onWatchedClick);
     this._popupComponent.setCloseButtonHandler(this._onClosePopupClick);
-    this._popupComponent.setDeleteClickHandler(this._onDeleteClick);
 
+
+    const commentContainer = this._popupComponent.getElement().querySelector(`.film-details__comments-list`);
+    const newCommentContainer = this._popupComponent.getElement().querySelector(`.film-details__comments-wrap`);
+
+    newCommentContainer.appendChild(this._newCommnetComponent.getElement());
+
+    if (this._comments) {
+      this._commentsComponent = new Comments(this._comments);
+      this._commentsComponent.setDeleteClickHandler(this._onDeleteClick);
+      commentContainer.appendChild(this._commentsComponent.getElement());
+    } else {
+      commentContainer.appendChild(this._loadingComponent.getElement());
+    }
 
     if (prevFilmComponent === null || prevPopupComponent === null) {
       render(this._container, this._filmCardComponent, RenderPosition.BEFOREEND);
@@ -93,6 +104,7 @@ export default class filmCard {
 
     const bodyContainer = document.querySelector(`body`);
     bodyContainer.appendChild(this._popupComponent.getElement());
+
     document.addEventListener(`keydown`, this._onEscKeyDown);
     document.addEventListener(`keydown`, this._onCtrlEnterKeyDown);
     document.querySelector(`body`).classList.add(`hide-overflow`);
@@ -108,29 +120,27 @@ export default class filmCard {
     this._popupComponent.setScrollTop(value);
   }
 
-  _onDeleteClick({comment, film}) {
+  _onDeleteClick(comment) {
     this._changeData(
         UserAction.DELETE_COMMENT,
         UpdateType.MINOR,
-        {comment, film}
+        {comment, id: this._film.id}
     );
   }
 
   _onCtrlEnterKeyDown(evt) {
     if (evt.ctrlKey && evt.key === `Enter`) {
-      const message = this._popupComponent.getElement().querySelector(`.film-details__comment-input`);
-      const emoji = this._popupComponent.getElement().querySelector(`.film-details__emoji-item[checked]`);
-      if (message.value !== `` && emoji) {
+      const comment = this._popupComponent.getElement().querySelector(`.film-details__comment-input`);
+      const emotion = this._popupComponent.getElement().querySelector(`.film-details__emoji-item[checked]`);
+      if (comment.value !== `` && emotion) {
         this._changeData(
             UserAction.ADD_COMMENT,
             UpdateType.MINOR,
             Object.assign({
               comment: {
-                id: Date.now(),
-                message: message.value,
-                author: `author`,
-                date: dayjs(),
-                emoji: emoji.value,
+                comment: comment.value,
+                date: dayjs().toISOString(),
+                emotion: emotion.value,
               },
               film: this._film
             })
