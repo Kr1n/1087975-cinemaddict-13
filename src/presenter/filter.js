@@ -1,7 +1,7 @@
 import FilterView from "../view/filter.js";
 import {render, RenderPosition, replace, remove} from "../utils/common.js";
 import {filter} from "../utils/filter.js";
-import {FilterType, UpdateType} from "../consts.js";
+import {FilterType, MenuItem, UpdateType} from "../consts.js";
 
 export default class Filter {
   constructor(filterContainer, filterModel, filmsModel) {
@@ -11,6 +11,7 @@ export default class Filter {
     this._currentFilter = null;
 
     this._filterComponent = null;
+    this._callback = [];
 
     this._handleModelEvent = this._handleModelEvent.bind(this);
     this._handleFilterTypeChange = this._handleFilterTypeChange.bind(this);
@@ -45,8 +46,12 @@ export default class Filter {
     if (this._currentFilter === filterType) {
       return;
     }
-
     this._filterModel.setFilter(UpdateType.MAJOR, filterType);
+    this._callback.filterClick(MenuItem.FILMS);
+  }
+
+  setFilterTypeChangeHandler(callback) {
+    this._callback.filterClick = callback;
   }
 
   _getFilters() {

@@ -5,7 +5,7 @@ import {UserAction, UpdateType} from "../consts.js";
 import dayjs from "dayjs";
 import Comments from "../view/comments";
 import Loading from "../view/loading";
-import NewComment from "../view/newComment";
+import NewComment from "../view/new-comment";
 
 export const State = {
   ADDING: `ADDING`,

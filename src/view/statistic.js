@@ -2,9 +2,10 @@ import Smart from "./smart";
 import Chart from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels";
 import {getAllGenres, getTotalDuration, getWatchedFilms} from "../utils/films";
+import {getRankLabel} from "./profile";
 
 const renderGenreChart = (statisticCtx, data) => {
-  const BAR_HEIGHT = 50;
+  const BAR_HEIGHT = 75;
   // Обязательно рассчитайте высоту canvas, она зависит от количества элементов диаграммы
   statisticCtx.height = BAR_HEIGHT * 5;
 
@@ -73,6 +74,7 @@ const renderGenreChart = (statisticCtx, data) => {
 
 const creatStatisticTemplate = (films, data) => {
   const watchedFilms = getWatchedFilms(films);
+  const rank = getRankLabel(watchedFilms.length);
   const genres = getAllGenres(watchedFilms);
   for (const genre of genres) {
     const count = (watchedFilms.reduce(
@@ -90,27 +92,8 @@ const creatStatisticTemplate = (films, data) => {
     <p class="statistic__rank">
       Your rank
       <img class="statistic__img" src="images/bitmap@2x.png" alt="Avatar" width="35" height="35">
-      <span class="statistic__rank-label">Sci-Fighter</span>
+      <span class="statistic__rank-label">${rank}</span>
     </p>
-
-    <form action="https://echo.htmlacademy.ru/" method="get" class="statistic__filters">
-      <p class="statistic__filters-description">Show stats:</p>
-
-      <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-all-time" value="all-time" checked>
-      <label for="statistic-all-time" class="statistic__filters-label">All time</label>
-
-      <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-today" value="today">
-      <label for="statistic-today" class="statistic__filters-label">Today</label>
-
-      <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-week" value="week">
-      <label for="statistic-week" class="statistic__filters-label">Week</label>
-
-      <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-month" value="month">
-      <label for="statistic-month" class="statistic__filters-label">Month</label>
-
-      <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-year" value="year">
-      <label for="statistic-year" class="statistic__filters-label">Year</label>
-    </form>
 
     <ul class="statistic__text-list">
       <li class="statistic__text-item">

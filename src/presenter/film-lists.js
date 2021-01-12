@@ -10,7 +10,6 @@ import EmptyFilmList from "../view/empty-film-list";
 import AllFilms from "../view/all-films";
 import {sortFilmDate, sortFilmRating} from "../utils/films.js";
 import {filter} from "../utils/filter.js";
-import Statistic from "../view/statistic";
 import Profile from "../view/profile";
 import FooterStatistics from "../view/footer";
 import Loading from "../view/loading";
@@ -40,23 +39,21 @@ export default class FilmLists {
     this._handleViewAction = this._handleViewAction.bind(this);
     this._handleModelEvent = this._handleModelEvent.bind(this);
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
-    this._handlerStatisticClick = this._handlerStatisticClick.bind(this);
     this._onShowMoreBtnClick = this._onShowMoreBtnClick.bind(this);
     this._onPopupOpen = this._onPopupOpen.bind(this);
 
-    this._filmsModel.addObserver(this._handleModelEvent);
-    this._commentsModel.addObserver(this._handleModelEvent);
-    this._filterModel.addObserver(this._handleModelEvent);
+
   }
 
-  init(navigation) {
-    this._navigation = navigation;
+  init() {
     this._filmCardPresenters = {};
     this._mostCommentedCardPresenters = {};
     this._topRatedCardPresenters = {};
     this._isLoading = true;
 
-    this._navigation.setStatisticsClickHandler(this._handlerStatisticClick);
+    this._filmsModel.addObserver(this._handleModelEvent);
+    this._commentsModel.addObserver(this._handleModelEvent);
+    this._filterModel.addObserver(this._handleModelEvent);
 
     this._renderFilmsLists();
   }
@@ -96,7 +93,7 @@ export default class FilmLists {
 
       this._renderContentFilms();
 
-      if (films.length > FILMS_PER_PAGE) {
+      if (films.length > FILMS_PER_PAGE && (films.length > this._renderedFilmCount)) {
         this._renderShowMoreButton();
       }
 
@@ -109,9 +106,7 @@ export default class FilmLists {
 
   _clearFilmList({resetRenderedFilmCount = false, resetSortType = false} = {}) {
 
-    if (this._isPopupOpened()) {
-      this._popupScrollTop = this._filmCardPresenters[this._openedPopupId].getScrollTop();
-    }
+    this._saveScrollTop();
 
     Object
       .values(this._filmCardPresenters)
@@ -243,12 +238,6 @@ export default class FilmLists {
     filmArray[film.id] = filmCardPresenter;
   }
 
-  _renderStatistic() {
-    const allFilms = this._filmsModel.getFilms();
-    this._statistic = new Statistic(allFilms);
-    render(this._filmListsContainer, this._statistic, RenderPosition.BEFOREEND);
-  }
-
   _onShowMoreBtnClick() {
     const filmsListContainer = this._filmsList.getElement().querySelector(`.films-list__container`);
 
@@ -269,16 +258,20 @@ export default class FilmLists {
       this._filmCardPresenters[this._openedPopupId].closePopup();
     }
     this._openedPopupId = filmId;
-
     this._api.getComments(filmId)
       .then((response) => this._commentsModel.setComments(UpdateType.PATCH, {comments: response, id: filmId}))
+      .then(() => this._restoreScrollTop())
       .catch(() => this._filmCardPresenters[filmId].setViewState(FilmPresenterViewState.ABORTING));
   }
 
-  _handlerStatisticClick() {
-    this._clearFilmList();
-    this._filterModel.setFilter(null);
-    this._renderStatistic();
+  show() {
+    this._filmsList.getElement().classList.remove(`visually-hidden`);
+    this._sortComponent.getElement().classList.remove(`visually-hidden`);
+  }
+
+  hide() {
+    this._filmsList.getElement().classList.add(`visually-hidden`);
+    this._sortComponent.getElement().classList.add(`visually-hidden`);
   }
 
   _handleSortTypeChange(sortType) {
@@ -317,8 +310,6 @@ export default class FilmLists {
   }
 
   _handleModelEvent(updateType, data) {
-    this._saveScrollTop();
-
     switch (updateType) {
       case UpdateType.PATCH:
         const film = this._getFilms()[data.id];
