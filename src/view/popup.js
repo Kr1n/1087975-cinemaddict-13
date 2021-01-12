@@ -135,25 +135,21 @@ export default class Popup extends Abstract {
 
   _closeButtonHandler(evt) {
     evt.preventDefault();
-    this._scrollTop = 0;
     this._callbacks.closeButtonClick();
   }
 
   _favoriteClickHandler(evt) {
     evt.preventDefault();
-    this._scrollTop = this.getElement().scrollTop;
     this._callbacks.favoriteClick();
   }
 
   _watchedClickHandler(evt) {
     evt.preventDefault();
-    this._scrollTop = this.getElement().scrollTop;
     this._callbacks.watchedClickHandler();
   }
 
   _watchlistClickHandler(evt) {
     evt.preventDefault();
-    this._scrollTop = this.getElement().scrollTop;
     this._callbacks.watchlistClickHandler();
   }
 

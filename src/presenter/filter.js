@@ -46,6 +46,7 @@ export default class Filter {
     if (this._currentFilter === filterType) {
       return;
     }
+
     this._filterModel.setFilter(UpdateType.MAJOR, filterType);
     this._callback.filterClick(MenuItem.FILMS);
   }

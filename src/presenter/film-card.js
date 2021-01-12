@@ -107,6 +107,10 @@ export default class filmCard {
     }
   }
 
+  getFilm() {
+    return this._film;
+  }
+
   isPopupOpened() {
     return this._isPopupOpened;
   }

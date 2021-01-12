@@ -36,7 +36,8 @@ export const sortFilmRating = (filmA, filmB) => {
   return dayjs(filmB.releaseDate).diff(dayjs(filmA.releaseDate));
 };
 
-export const getAllGenres = (films) => {
+export const getAllGenres = (data) => {
+  const films = data;
   const genres = new Set();
   for (const film of films) {
     film.genres.forEach((item)=> genres.add(item));

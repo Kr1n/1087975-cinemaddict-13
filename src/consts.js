@@ -37,3 +37,11 @@ export const MenuItem = {
   FILMS: `FILMS`,
   STATISTICS: `STATISTICS`
 };
+
+export const Period = {
+  ALL: `All time`,
+  TODAY: `Today`,
+  WEEK: `Week`,
+  MONTH: `Month`,
+  YEAR: `Year`
+};

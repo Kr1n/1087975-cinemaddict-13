@@ -8,7 +8,6 @@ import FilmsModel from "./model/films";
 import CommentsModel from "./model/comments";
 import FilterModel from "./model/filter";
 import Api from "./api";
-import StatisticPeriod from "./view/statistic-period";
 
 const api = new Api(END_POINT, AUTHORIZATION);
 
@@ -25,9 +24,6 @@ let statistic = null;
 
 const renderStatistic = () => {
   statistic = new Statistic(filmsModel.getFilms());
-  const statisticPeriodNextContainer = statistic.getElement().querySelector(`.statistic__text-list`);
-  const statisticPeriod = new StatisticPeriod();
-  statistic.getElement().insertBefore(statisticPeriod.getElement(), statisticPeriodNextContainer);
   render(mainContainer, statistic, RenderPosition.BEFOREEND);
 };
 
