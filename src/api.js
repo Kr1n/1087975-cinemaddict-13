@@ -8,7 +8,7 @@ const Method = {
   DELETE: `DELETE`
 };
 
-const SuccessHTTPStatusRange = {
+const successHTTPStatusRange = {
   MIN: 200,
   MAX: 299
 };
@@ -77,8 +77,8 @@ export default class Api {
 
   static checkStatus(response) {
     if (
-      response.status < SuccessHTTPStatusRange.MIN ||
-      response.status > SuccessHTTPStatusRange.MAX
+      response.status < successHTTPStatusRange.MIN ||
+      response.status > successHTTPStatusRange.MAX
     ) {
       throw new Error(`${response.status}: ${response.statusText}`);
     }
