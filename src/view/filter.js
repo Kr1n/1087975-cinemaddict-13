@@ -9,7 +9,7 @@ const createFilterItemTemplate = (filter, currentFilterType) => {
       data-filter="${type}"
       class="main-navigation__item ${type === currentFilterType ? `main-navigation__item--active` : ``}">
       ${name}
-      ${type === `all` ? `` : `<span class="main-navigation__item-count">${count}</span>`}
+      ${type === `all` ? `` : `<span class="main-navigation__item-count" data-filter="${type}">${count}</span>`}
     </a>`
   );
 };
@@ -42,7 +42,7 @@ export default class Filter extends Abstract {
   }
 
   _filterTypeChangeHandler(evt) {
-    if (evt.target.tagName !== `A`) {
+    if (evt.target.tagName === `DIV`) {
       return;
     }
 

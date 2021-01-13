@@ -30,18 +30,16 @@ const renderStatistic = () => {
 const handleSiteMenuClick = (menuItem) => {
   switch (menuItem) {
     case MenuItem.FILMS:
-      if (statistic) {
-        remove(statistic);
-        navigation.setStatisticsClickHandler(handleSiteMenuClick);
+      if (!statistic) {
+        return;
       }
-
+      remove(statistic);
+      navigation.setStatisticsClickHandler(handleSiteMenuClick);
       filmListsPresentor.show();
-
       break;
     case MenuItem.STATISTICS:
-
-      filmListsPresentor.hide();
       filterModel.setFilter(UpdateType.MAJOR, FilterType.NONE);
+      filmListsPresentor.hide();
       renderStatistic();
       navigation.setStatisticsClickHandler(null);
       break;

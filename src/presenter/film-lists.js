@@ -273,7 +273,6 @@ export default class FilmLists {
   hide() {
     this._sortComponent.getElement().classList.add(`visually-hidden`);
     this._filmsList.getElement().classList.add(`visually-hidden`);
-
   }
 
   _handleSortTypeChange(sortType) {
