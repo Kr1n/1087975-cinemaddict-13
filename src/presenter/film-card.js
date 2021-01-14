@@ -203,7 +203,8 @@ export default class filmCard {
   }
 
   _onFavoriteClick() {
-    let obj = {...this._film, isFavorite: !this._film.isFavorite}
+    // let obj = {...this._film, isFavorite: !this._film.isFavorite}
+    let obj = Object.array({}, this._film, {isFavorite: !this._film.isFavorite});
     this._changeData(
         UserAction.UPDATE_FILM,
         UpdateType.MINOR,
@@ -212,7 +213,8 @@ export default class filmCard {
   }
 
   _onWatchedClick() {
-    let obj = {...this._film, isWatched: !this._film.isWatched}
+    // let obj = {...this._film, isWatched: !this._film.isWatched}
+    let obj = Object.array({}, this._film, {isWatched: !this._film.isWatched});
     this._changeData(
         UserAction.UPDATE_FILM,
         UpdateType.MINOR,
@@ -221,7 +223,8 @@ export default class filmCard {
   }
 
   _onWatchlistClick() {
-    let obj = {...this._film, inWatchlist: !this._film.inWatchlist}
+    // let obj = {...this._film, inWatchlist: !this._film.inWatchlist}
+    let obj = Object.array({}, this._film, {inWatchlist: !this._film.inWatchlist});
     this._changeData(
         UserAction.UPDATE_FILM,
         UpdateType.MINOR,
