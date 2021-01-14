@@ -3,14 +3,21 @@ import FilmCard from "../view/film-card";
 import Popup from "../view/popup";
 import {UserAction, UpdateType} from "../consts.js";
 import dayjs from "dayjs";
+import Comments from "../view/comments";
+import Loading from "../view/loading";
+import NewComment from "../view/new-comment";
 
+export const State = {
+  ADDING: `ADDING`,
+  DELETING: `DELETING`,
+  ABORTING: `ABORTING`
+};
 
 export default class filmCard {
   constructor(container, changeData, openPopup) {
     this._container = container;
     this._changeData = changeData;
     this._openPopup = openPopup;
-    this._popupScrollTop = 1;
 
     this._popupComponent = null;
     this._filmCardComponent = null;
@@ -34,11 +41,10 @@ export default class filmCard {
 
     this._film = film;
     this._comments = comments;
-
-    const popupComments = this._comments.filter((item) => (this._film).comments.has(item.id));
-
     this._filmCardComponent = new FilmCard(this._film);
-    this._popupComponent = new Popup(this._film, popupComments);
+    this._popupComponent = new Popup(this._film);
+    this._loadingComponent = new Loading();
+    this._newCommnetComponent = new NewComment();
 
     this._filmCardComponent.setClickPosterHandler(this._onFilmCardClick);
     this._filmCardComponent.setFavoriteClickHandler(this._onFavoriteClick);
@@ -49,7 +55,20 @@ export default class filmCard {
     this._popupComponent.setWatchlistClickHandler(this._onWatchlistClick);
     this._popupComponent.setWatchedClickHandler(this._onWatchedClick);
     this._popupComponent.setCloseButtonHandler(this._onClosePopupClick);
-    this._popupComponent.setDeleteClickHandler(this._onDeleteClick);
+
+
+    const commentContainer = this._popupComponent.getElement().querySelector(`.film-details__comments-list`);
+    const newCommentContainer = this._popupComponent.getElement().querySelector(`.film-details__comments-wrap`);
+
+    newCommentContainer.appendChild(this._newCommnetComponent.getElement());
+
+    if (this._comments) {
+      this._commentsComponent = new Comments(this._comments);
+      this._commentsComponent.setDeleteClickHandler(this._onDeleteClick);
+      commentContainer.appendChild(this._commentsComponent.getElement());
+    } else {
+      commentContainer.appendChild(this._loadingComponent.getElement());
+    }
 
     if (prevFilmComponent === null || prevPopupComponent === null) {
       render(this._container, this._filmCardComponent, RenderPosition.BEFOREEND);
@@ -66,6 +85,32 @@ export default class filmCard {
     remove(prevPopupComponent);
   }
 
+  setViewState(state, data) {
+    const resetFormState = () => {
+
+      if (this._commentsComponent) {
+        this._commentsComponent.setButtonsDisabled(false);
+      }
+      this._newCommnetComponent.setFormDisabled(false);
+    };
+
+    switch (state) {
+      case State.ADDING:
+        this._newCommnetComponent.setFormDisabled(true);
+        break;
+      case State.DELETING:
+        this._commentsComponent.setButtonsDisabled(true, data);
+        break;
+      case State.ABORTING:
+        this._popupComponent.shake(resetFormState);
+        break;
+    }
+  }
+
+  getFilm() {
+    return this._film;
+  }
+
   isPopupOpened() {
     return this._isPopupOpened;
   }
@@ -75,6 +120,10 @@ export default class filmCard {
       return;
     }
     this._isPopupOpened = false;
+    this._comments = null;
+    if (this._commentsComponent) {
+      remove(this._commentsComponent);
+    }
 
     const bodyContainer = document.querySelector(`body`);
     bodyContainer.removeChild(this._popupComponent.getElement());
@@ -91,11 +140,14 @@ export default class filmCard {
 
     const bodyContainer = document.querySelector(`body`);
     bodyContainer.appendChild(this._popupComponent.getElement());
+
+    const commentContainer = this._popupComponent.getElement().querySelector(`.film-details__comments-list`);
+    commentContainer.appendChild(this._loadingComponent.getElement());
+
     document.addEventListener(`keydown`, this._onEscKeyDown);
     document.addEventListener(`keydown`, this._onCtrlEnterKeyDown);
     document.querySelector(`body`).classList.add(`hide-overflow`);
     this._isPopupOpened = true;
-    this._popupComponent.restoreScrollTop();
   }
 
   getScrollTop() {
@@ -106,31 +158,29 @@ export default class filmCard {
     this._popupComponent.setScrollTop(value);
   }
 
-  _onDeleteClick({comment, film}) {
+  _onDeleteClick(comment) {
     this._changeData(
         UserAction.DELETE_COMMENT,
         UpdateType.MINOR,
-        {comment, film}
+        {comment, id: this._film.id}
     );
   }
 
   _onCtrlEnterKeyDown(evt) {
     if (evt.ctrlKey && evt.key === `Enter`) {
-      const message = this._popupComponent.getElement().querySelector(`.film-details__comment-input`);
-      const emoji = this._popupComponent.getElement().querySelector(`.film-details__emoji-item[checked]`);
-      if (message.value !== `` && emoji) {
+      const comment = this._popupComponent.getElement().querySelector(`.film-details__comment-input`);
+      const emotion = this._popupComponent.getElement().querySelector(`.film-details__emoji-item[checked]`);
+      if (comment.value !== `` && emotion) {
         this._changeData(
             UserAction.ADD_COMMENT,
             UpdateType.MINOR,
             Object.assign({
               comment: {
-                id: Date.now(),
-                message: message.value,
-                author: `author`,
-                date: dayjs(),
-                emoji: emoji.value,
+                comment: comment.value,
+                date: dayjs().toISOString(),
+                emotion: emotion.value,
               },
-              film: this._film
+              id: this._film.id
             })
         );
       }
@@ -153,44 +203,29 @@ export default class filmCard {
   }
 
   _onFavoriteClick() {
+    let obj = {...this._film, isFavorite: !this._film.isFavorite}
     this._changeData(
         UserAction.UPDATE_FILM,
         UpdateType.MINOR,
-        Object.assign(
-            {},
-            this._film,
-            {
-              isFavorite: !this._film.isFavorite
-            }
-        )
+        obj
     );
   }
 
   _onWatchedClick() {
+    let obj = {...this._film, isWatched: !this._film.isWatched}
     this._changeData(
         UserAction.UPDATE_FILM,
         UpdateType.MINOR,
-        Object.assign(
-            {},
-            this._film,
-            {
-              isWatched: !this._film.isWatched
-            }
-        )
+        obj
     );
   }
 
   _onWatchlistClick() {
+    let obj = {...this._film, inWatchlist: !this._film.inWatchlist}
     this._changeData(
         UserAction.UPDATE_FILM,
         UpdateType.MINOR,
-        Object.assign(
-            {},
-            this._film,
-            {
-              inWatchlist: !this._film.inWatchlist
-            }
-        )
+        obj
     );
   }
 

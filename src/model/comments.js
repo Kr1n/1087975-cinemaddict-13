@@ -6,31 +6,32 @@ export default class Comments extends Observer {
     this._comments = [];
   }
 
-  setComments(comments) {
-    this._comments = comments.slice();
+  setComments(updateType, newComments) {
+    this._comments = newComments.comments.slice();
+    this._notify(updateType, newComments);
   }
 
   getComments() {
     return this._comments;
   }
 
-  addComment(updateType, update) {
+  addComment(updateType, newComment) {
     this._comments = [
-      update,
+      newComment,
       ...this._comments
     ];
-    this._notify(updateType, update);
+    this._notify(updateType, newComment);
   }
 
-  deleteComment(updateType, update) {
-    const index = this._comments.findIndex((comment) => comment.id === update.id);
-
+  deleteComment(updateType, commentForDeletion) {
+    const index = this._comments.findIndex((comment) => comment.id === commentForDeletion.id);
     if (index === -1) {
       throw new Error(`Can't delete unexisting comment`);
     }
 
     this._comments.splice(index, 1);
 
-    this._notify(updateType, update);
+    this._notify(updateType, commentForDeletion);
   }
+
 }

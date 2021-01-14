@@ -1,5 +1,6 @@
 import FilmsModel from "./model/films.js";
 
+
 const Method = {
   GET: `GET`,
   PUT: `PUT`,
@@ -7,7 +8,7 @@ const Method = {
   DELETE: `DELETE`
 };
 
-const SuccessHTTPStatusRange = {
+const successHTTPStatusRange = {
   MIN: 200,
   MAX: 299
 };
@@ -24,8 +25,8 @@ export default class Api {
       .then((films) => films.map(FilmsModel.adaptToClient));
   }
 
-  getComments() {
-    return this._load({url: `comments`})
+  getComments(id) {
+    return this._load({url: `comments/${id}`})
       .then(Api.toJSON);
   }
 
@@ -40,20 +41,20 @@ export default class Api {
       .then(FilmsModel.adaptToClient);
   }
 
-  addFilm(film) {
+  addComment(comment, id) {
     return this._load({
-      url: `movies`,
+      url: `comments/${id}`,
       method: Method.POST,
-      body: JSON.stringify(FilmsModel.adaptToServer(film)),
+      body: JSON.stringify(comment),
       headers: new Headers({"Content-Type": `application/json`})
     })
       .then(Api.toJSON)
-      .then(FilmsModel.adaptToClient);
+      .then((response) => FilmsModel.adaptToClient(response.movie));
   }
 
-  deleteFilm(film) {
+  deleteComment(id) {
     return this._load({
-      url: `tasks/${film.id}`,
+      url: `comments/${id}`,
       method: Method.DELETE
     });
   }
@@ -76,8 +77,8 @@ export default class Api {
 
   static checkStatus(response) {
     if (
-      response.status < SuccessHTTPStatusRange.MIN ||
-      response.status > SuccessHTTPStatusRange.MAX
+      response.status < successHTTPStatusRange.MIN ||
+      response.status > successHTTPStatusRange.MAX
     ) {
       throw new Error(`${response.status}: ${response.statusText}`);
     }

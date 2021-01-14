@@ -1,4 +1,5 @@
 import Abstract from "./abstract";
+import {MenuItem} from "../consts";
 
 const createFiltersTemplate = () => {
 
@@ -22,7 +23,9 @@ export default class Filter extends Abstract {
 
   _statisticsClickHandler(evt) {
     evt.preventDefault();
-    this._callbacks.statisticClick();
+    if (this._callbacks.statisticClick) {
+      this._callbacks.statisticClick(MenuItem.STATISTICS);
+    }
   }
 
   setStatisticsClickHandler(callback) {
