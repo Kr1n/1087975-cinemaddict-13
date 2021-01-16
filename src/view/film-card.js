@@ -45,6 +45,7 @@ export default class FilmCard extends Abstract {
     return createFilmCardTemplate(this._film);
   }
 
+
   _posterClickHandler(evt) {
     evt.preventDefault();
     this._callbacks.clickPoster();
@@ -64,6 +65,7 @@ export default class FilmCard extends Abstract {
     evt.preventDefault();
     this._callbacks.watchlistClickHandler();
   }
+
 
   setClickPosterHandler(callback) {
     this._callbacks.clickPoster = callback;

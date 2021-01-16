@@ -14,10 +14,12 @@ export const State = {
 };
 
 export default class filmCard {
-  constructor(container, changeData, openPopup) {
+  constructor(container, changeData, requestComments, openPopup, closePopup) {
     this._container = container;
     this._changeData = changeData;
     this._openPopup = openPopup;
+    this._closePopup = closePopup;
+    this._requestComments = requestComments;
 
     this._popupComponent = null;
     this._filmCardComponent = null;
@@ -62,7 +64,7 @@ export default class filmCard {
 
     newCommentContainer.appendChild(this._newCommnetComponent.getElement());
 
-    if (this._comments) {
+    if (this._comments && this._comments.length) {
       this._commentsComponent = new Comments(this._comments);
       this._commentsComponent.setDeleteClickHandler(this._onDeleteClick);
       commentContainer.appendChild(this._commentsComponent.getElement());
@@ -111,32 +113,38 @@ export default class filmCard {
     return this._film;
   }
 
-  isPopupOpened() {
-    return this._isPopupOpened;
-  }
-
   closePopup() {
     if (!this._isPopupOpened) {
       return;
     }
-    this._isPopupOpened = false;
+
     this._comments = null;
     if (this._commentsComponent) {
       remove(this._commentsComponent);
     }
+    this._isPopupOpened = false;
 
     const bodyContainer = document.querySelector(`body`);
     bodyContainer.removeChild(this._popupComponent.getElement());
+
     document.removeEventListener(`keydown`, this._onEscKeyDown);
     document.removeEventListener(`keydown`, this._onCtrlEnterKeyDown);
     document.querySelector(`body`).classList.remove(`hide-overflow`);
+  }
+
+  setScrollTop(value) {
+    this._popupComponent.setScrollTop(value);
+  }
+
+  getScrollTop() {
+    return this._popupComponent.getScrollTop();
   }
 
   showPopup() {
     if (this._isPopupOpened) {
       return;
     }
-    this._openPopup(this._film.id);
+    this._isPopupOpened = true;
 
     const bodyContainer = document.querySelector(`body`);
     bodyContainer.appendChild(this._popupComponent.getElement());
@@ -147,15 +155,8 @@ export default class filmCard {
     document.addEventListener(`keydown`, this._onEscKeyDown);
     document.addEventListener(`keydown`, this._onCtrlEnterKeyDown);
     document.querySelector(`body`).classList.add(`hide-overflow`);
-    this._isPopupOpened = true;
-  }
 
-  getScrollTop() {
-    return this._popupComponent.getScrollTop();
-  }
-
-  setScrollTop(value) {
-    this._popupComponent.setScrollTop(value);
+    this._requestComments(this._film.id);
   }
 
   _onDeleteClick(comment) {
@@ -188,23 +189,23 @@ export default class filmCard {
   }
 
   _onFilmCardClick() {
-    this.showPopup();
+    this._openPopup(this._film.id);
   }
 
   _onEscKeyDown(evt) {
     if (evt.key === `Escape` || evt.key === `Esc`) {
       evt.preventDefault();
-      this.closePopup();
+      this._closePopup(this._film.id);
     }
   }
 
   _onClosePopupClick() {
-    this.closePopup();
+    this._closePopup(this._film.id);
   }
 
   _onFavoriteClick() {
     // let obj = {...this._film, isFavorite: !this._film.isFavorite}
-    let obj = Object.array({}, this._film, {isFavorite: !this._film.isFavorite});
+    let obj = Object.assign({}, this._film, {isFavorite: !this._film.isFavorite});
     this._changeData(
         UserAction.UPDATE_FILM,
         UpdateType.MINOR,
@@ -214,7 +215,7 @@ export default class filmCard {
 
   _onWatchedClick() {
     // let obj = {...this._film, isWatched: !this._film.isWatched}
-    let obj = Object.array({}, this._film, {isWatched: !this._film.isWatched});
+    let obj = Object.assign({}, this._film, {isWatched: !this._film.isWatched});
     this._changeData(
         UserAction.UPDATE_FILM,
         UpdateType.MINOR,
@@ -224,7 +225,7 @@ export default class filmCard {
 
   _onWatchlistClick() {
     // let obj = {...this._film, inWatchlist: !this._film.inWatchlist}
-    let obj = Object.array({}, this._film, {inWatchlist: !this._film.inWatchlist});
+    let obj = Object.assign({}, this._film, {inWatchlist: !this._film.inWatchlist});
     this._changeData(
         UserAction.UPDATE_FILM,
         UpdateType.MINOR,
@@ -237,5 +238,6 @@ export default class filmCard {
     document.removeEventListener(`keydown`, this._onEscKeyDown);
     document.removeEventListener(`keydown`, this._onCtrlEnterKeyDown);
     remove(this._filmCardComponent);
+
   }
 }

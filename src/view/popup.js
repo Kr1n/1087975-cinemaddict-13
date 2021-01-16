@@ -133,6 +133,7 @@ export default class Popup extends Abstract {
     this.getElement().scrollTop = value;
   }
 
+
   _closeButtonHandler(evt) {
     evt.preventDefault();
     this._callbacks.closeButtonClick();
