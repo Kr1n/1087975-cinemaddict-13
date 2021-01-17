@@ -91,11 +91,12 @@ export default class FilmLists {
     if (films.length) {
 
       this._renderContentFilms();
-
       if (films.length > FILMS_PER_PAGE && (films.length > this._renderedFilmCount)) {
         this._renderShowMoreButton();
       }
 
+      this._renderTopRated();
+      this._renderMostCommented();
     } else {
       this._renderEmptyLists();
     }
@@ -109,6 +110,16 @@ export default class FilmLists {
       .values(this._filmCardPresenters)
       .forEach((presenter) => presenter.destroy());
     this._filmCardPresenters = {};
+
+    Object
+      .values(this._mostCommentedCardPresenters)
+      .forEach((presenter) => presenter.destroy());
+    this._mostCommentedCardPresenters = {};
+
+    Object
+      .values(this._topRatedCardPresenters)
+      .forEach((presenter) => presenter.destroy());
+    this._topRatedCardPresenters = {};
 
     remove(this._showMoreButtonComponent);
     remove(this._sortComponent);
@@ -175,9 +186,10 @@ export default class FilmLists {
   _renderTopRated() {
     const sortForTopRated = (a, b) => b.rating - a.rating;
     const container = this._topRatedFilms.getElement().querySelector(`.films-list__container`);
+    const allFilms = this._filmsModel.getFilms();
 
     render(this._filmsList, this._topRatedFilms, RenderPosition.BEFOREEND);
-    this._allFilms
+    allFilms
       .slice()
       .sort(sortForTopRated)
       .slice(0, FILMS_IN_TOPRATED_LIST)
@@ -189,9 +201,10 @@ export default class FilmLists {
   _renderMostCommented() {
     const sortForMostCommented = (a, b) => b.comments.size - a.comments.size;
     const container = this._mostCommentedFilms.getElement().querySelector(`.films-list__container`);
+    const allFilms = this._filmsModel.getFilms();
 
     render(this._filmsList, this._mostCommentedFilms, RenderPosition.BEFOREEND);
-    this._allFilms
+    allFilms
       .slice()
       .sort(sortForMostCommented)
       .slice(0, FILMS_IN_MOSTCOMMENTED_LIST)
@@ -305,12 +318,6 @@ export default class FilmLists {
     }
   }
 
-  _restoreScrollTop() {
-    if (this._openedPopupId !== null && this._filmCardPresenters[this._openedPopupId]) {
-      this._filmCardPresenters[this._openedPopupId].setScrollTop(this._popupScrollTop);
-    }
-  }
-
   _handleModelEvent(updateType, data) {
     switch (updateType) {
       case UpdateType.PATCH:
@@ -345,6 +352,12 @@ export default class FilmLists {
         remove(this._loadingComponent);
         this._renderFilmsLists();
         break;
+    }
+  }
+
+  _restoreScrollTop() {
+    if (this._openedPopupId !== null && this._filmCardPresenters[this._openedPopupId]) {
+      this._filmCardPresenters[this._openedPopupId].setScrollTop(this._popupScrollTop);
     }
   }
 }
