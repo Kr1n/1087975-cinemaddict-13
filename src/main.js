@@ -48,8 +48,8 @@ const handleSiteMenuClick = (menuItem) => {
       filmListsPresentor.show();
       break;
     case MenuItem.STATISTICS:
+      filterModel.setFilter(UpdateType.NONE, FilterType.NONE);
       filmListsPresentor.hide();
-      filterModel.setFilter(UpdateType.MAJOR, FilterType.NONE);
       renderStatistic();
       navigation.setStatisticsClickHandler(null);
       break;
