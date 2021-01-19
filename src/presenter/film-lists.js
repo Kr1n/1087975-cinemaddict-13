@@ -268,9 +268,8 @@ export default class FilmLists {
 
   _requestComments(filmId) {
     this._api.getComments(filmId)
-      .then((response) => this._commentsModel.setComments(UpdateType.PATCH, {comments: response, id: filmId}));
-    // .then(() => this._restoreScrollTop());
-    // .catch(() => this._filmCardPresenters[filmId].setViewState(FilmPresenterViewState.ABORTING));
+      .then((response) => this._commentsModel.setComments(UpdateType.PATCH, {comments: response, id: filmId}))
+      .catch(() => this._filmCardPresenters[filmId].setViewState(FilmPresenterViewState.ABORTING));
   }
 
   show() {
@@ -297,8 +296,8 @@ export default class FilmLists {
     switch (actionType) {
       case UserAction.UPDATE_FILM:
         this._api.updateFilm(update)
-          .then((response) => this._filmsModel.updateFilm(updateType, response));
-        // .catch(() => this._filmCardPresenters[update.id].setViewState(FilmPresenterViewState.ABORTING));
+          .then((response) => this._filmsModel.updateFilm(updateType, response))
+          .catch(() => this._filmCardPresenters[update.id].setViewState(FilmPresenterViewState.ABORTING));
         break;
 
       case UserAction.ADD_COMMENT:

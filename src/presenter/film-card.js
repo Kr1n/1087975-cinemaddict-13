@@ -1,7 +1,8 @@
-import {remove, render, replace, RenderPosition} from "../utils/common";
+import {remove, render, replace, RenderPosition, isOnline} from "../utils/common";
+import {toast} from "../utils/toast.js";
+import {UserAction, UpdateType} from "../consts";
 import FilmCard from "../view/film-card";
 import Popup from "../view/popup";
-import {UserAction, UpdateType} from "../consts.js";
 import dayjs from "dayjs";
 import Comments from "../view/comments";
 import Loading from "../view/loading";
@@ -105,6 +106,7 @@ export default class filmCard {
         break;
       case State.ABORTING:
         this._popupComponent.shake(resetFormState);
+        toast(`Something wrong in network`);
         break;
     }
   }
@@ -160,6 +162,11 @@ export default class filmCard {
   }
 
   _onDeleteClick(comment) {
+    if (!isOnline()) {
+      toast(`You can't delete comment offline`);
+      return;
+    }
+
     this._changeData(
         UserAction.DELETE_COMMENT,
         UpdateType.MINOR,
@@ -169,6 +176,11 @@ export default class filmCard {
 
   _onCtrlEnterKeyDown(evt) {
     if (evt.ctrlKey && evt.key === `Enter`) {
+      if (!isOnline()) {
+        toast(`You can't add comment offline`);
+        return;
+      }
+
       const comment = this._popupComponent.getElement().querySelector(`.film-details__comment-input`);
       const emotion = this._popupComponent.getElement().querySelector(`.film-details__emoji-item[checked]`);
       if (comment.value !== `` && emotion) {

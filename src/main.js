@@ -7,9 +7,19 @@ import FilterPresentor from "./presenter/filter";
 import FilmsModel from "./model/films";
 import CommentsModel from "./model/comments";
 import FilterModel from "./model/filter";
-import Api from "./api";
+import Api from "./api/api";
+import Store from "./api/store";
+import Provider from "./api/provider";
+import {toast} from "./utils/toast";
+
+const STORE_PREFIX = `cinema-localstorage`;
+const STORE_VER = `v1`;
+const STORE_NAME = `${STORE_PREFIX}-${STORE_VER}`;
 
 const api = new Api(END_POINT, AUTHORIZATION);
+
+const store = new Store(STORE_NAME, window.localStorage);
+const apiWithProvider = new Provider(api, store);
 
 const filterModel = new FilterModel();
 const filmsModel = new FilmsModel();
@@ -18,7 +28,7 @@ const commentsModel = new CommentsModel();
 const mainContainer = document.querySelector(`.main`);
 
 const navigation = new Navigation();
-const filmListsPresentor = new FilmListsPresenter(mainContainer, filmsModel, commentsModel, filterModel, api);
+const filmListsPresentor = new FilmListsPresenter(mainContainer, filmsModel, commentsModel, filterModel, apiWithProvider);
 const filterPresenter = new FilterPresentor(navigation.getElement(), filterModel, filmsModel);
 let statistic = null;
 
@@ -54,8 +64,24 @@ filterPresenter.setFilterTypeChangeHandler(handleSiteMenuClick);
 filterPresenter.init();
 filmListsPresentor.init();
 
-api.getFilms()
+apiWithProvider.getFilms()
   .then((films) => {
     filmsModel.setFilms(UpdateType.INIT, films);
+  })
+  .catch(() => {
+    filmsModel.setFilms(UpdateType.INIT, []);
+    toast(`Something wrong in network`);
   });
-// .catch(() => {    filmsModel.setFilms(UpdateType.INIT, []);  });
+
+window.addEventListener(`load`, () => {
+  navigator.serviceWorker.register(`/sw.js`);
+});
+
+window.addEventListener(`online`, () => {
+  document.title = document.title.replace(` [offline]`, ``);
+  apiWithProvider.sync();
+});
+
+window.addEventListener(`offline`, () => {
+  document.title += ` [offline]`;
+});
