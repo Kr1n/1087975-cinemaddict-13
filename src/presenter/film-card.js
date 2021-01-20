@@ -161,6 +161,10 @@ export default class filmCard {
     this._requestComments(this._film.id);
   }
 
+  isPopupOpened() {
+    return this._isPopupOpened;
+  }
+
   _onDeleteClick(comment) {
     if (!isOnline()) {
       toast(`You can't delete comment offline`);

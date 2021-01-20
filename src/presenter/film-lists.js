@@ -97,6 +97,12 @@ export default class FilmLists {
 
       this._renderTopRated();
       this._renderMostCommented();
+
+      const filmPresentersArray = this._getFilmPresentersArrayForPopup();
+      if (filmPresentersArray) {
+        filmPresentersArray[this._openedPopupId].showPopup();
+      }
+
     } else {
       this._renderEmptyLists();
     }
@@ -177,10 +183,6 @@ export default class FilmLists {
 
     render(this._filmsList, this._catalogFilms, RenderPosition.BEFOREEND);
     filmsToRender.forEach((film) => this._renderFilmCard(film, container, this._filmCardPresenters));
-
-    if (this._openedPopupId !== null && this._filmCardPresenters[this._openedPopupId]) {
-      this._filmCardPresenters[this._openedPopupId].showPopup();
-    }
   }
 
   _renderTopRated() {
@@ -250,10 +252,15 @@ export default class FilmLists {
     }
   }
 
-
   _popupCloseHandler(filmId) {
     if (this._filmCardPresenters[filmId]) {
       this._filmCardPresenters[filmId].closePopup();
+    } else
+    if (this._mostCommentedCardPresenters[filmId]) {
+      this._mostCommentedCardPresenters[filmId].closePopup();
+    } else
+    if (this._topRatedCardPresenters[filmId]) {
+      this._topRatedCardPresenters[filmId].closePopup();
     }
 
     this._openedPopupId = null;
@@ -263,13 +270,23 @@ export default class FilmLists {
     this._popupCloseHandler(this._openedPopupId);
 
     this._openedPopupId = filmId;
-    this._filmCardPresenters[filmId].showPopup();
+
+    if (this._filmCardPresenters[filmId]) {
+      this._filmCardPresenters[filmId].showPopup();
+    } else
+    if (this._mostCommentedCardPresenters[filmId]) {
+      this._mostCommentedCardPresenters[filmId].showPopup();
+    } else
+    if (this._topRatedCardPresenters[filmId]) {
+      this._topRatedCardPresenters[filmId].showPopup();
+    }
   }
 
   _requestComments(filmId) {
+    const filmPresentersArray = this._getFilmPresentersArrayForPopup();
     this._api.getComments(filmId)
       .then((response) => this._commentsModel.setComments(UpdateType.PATCH, {comments: response, id: filmId}))
-      .catch(() => this._filmCardPresenters[filmId].setViewState(FilmPresenterViewState.ABORTING));
+      .catch(() => filmPresentersArray[filmId].setViewState(FilmPresenterViewState.ABORTING));
   }
 
   show() {
@@ -293,55 +310,74 @@ export default class FilmLists {
   }
 
   _handleViewAction(actionType, updateType, update) {
+    const filmPresentersArray = this._getFilmPresentersArrayForPopup();
     switch (actionType) {
       case UserAction.UPDATE_FILM:
         this._api.updateFilm(update)
           .then((response) => this._filmsModel.updateFilm(updateType, response))
-          .catch(() => this._filmCardPresenters[update.id].setViewState(FilmPresenterViewState.ABORTING));
+          .catch(() => filmPresentersArray[update.id].setViewState(FilmPresenterViewState.ABORTING));
         break;
 
       case UserAction.ADD_COMMENT:
-        this._filmCardPresenters[update.id].setViewState(FilmPresenterViewState.ADDING);
+        filmPresentersArray[update.id].setViewState(FilmPresenterViewState.ADDING);
         this._api.addComment(update.comment, update.id)
           .then((response) => this._filmsModel.updateFilm(updateType, response))
-          .catch(() => this._filmCardPresenters[update.id].setViewState(FilmPresenterViewState.ABORTING));
+          .catch(() => filmPresentersArray[update.id].setViewState(FilmPresenterViewState.ABORTING));
         break;
 
       case UserAction.DELETE_COMMENT:
-        this._filmCardPresenters[update.id].setViewState(FilmPresenterViewState.DELETING, update.id);
+        filmPresentersArray[update.id].setViewState(FilmPresenterViewState.DELETING, update.id);
         this._api.deleteComment(update.comment.id)
           .then(() => this._api.getFilms())
           .then((response) => this._filmsModel.setFilms(UpdateType.MINOR, response))
-          .catch(() => this._filmCardPresenters[update.id].setViewState(FilmPresenterViewState.ABORTING));
+          .catch(() => filmPresentersArray[update.id].setViewState(FilmPresenterViewState.ABORTING));
         break;
     }
   }
 
+  _getFilmPresentersArrayForPopup() {
+    if (this._filmCardPresenters[this._openedPopupId]) {
+      return this._filmCardPresenters;
+    }
+
+    if (this._mostCommentedCardPresenters[this._openedPopupId]) {
+      return this._mostCommentedCardPresenters;
+    }
+
+    if (this._topRatedCardPresenters[this._openedPopupId]) {
+      return this._topRatedCardPresenters;
+    }
+    return null;
+  }
+
   _handleModelEvent(updateType, data) {
+    let filmPresentersArray = null;
     switch (updateType) {
       case UpdateType.PATCH:
-        if (this._filmCardPresenters[this._openedPopupId]) {
-          this._popupScrollTop = this._filmCardPresenters[this._openedPopupId].getScrollTop();
+        filmPresentersArray = this._getFilmPresentersArrayForPopup();
+        if (filmPresentersArray && filmPresentersArray[this._openedPopupId].isPopupOpened()) {
+          this._popupScrollTop = filmPresentersArray[this._openedPopupId].getScrollTop();
+          const film = filmPresentersArray[data.id].getFilm();
+          filmPresentersArray[data.id].init(film, this._getComments());
         }
 
-        const film = this._filmCardPresenters[data.id].getFilm();
-        this._filmCardPresenters[data.id].init(film, this._getComments());
         this._restoreScrollTop();
 
         break;
       case UpdateType.MINOR:
-
-        if (this._filmCardPresenters[this._openedPopupId]) {
-          this._popupScrollTop = this._filmCardPresenters[this._openedPopupId].getScrollTop();
-          this._filmCardPresenters[this._openedPopupId].closePopup();
+        filmPresentersArray = this._getFilmPresentersArrayForPopup();
+        if (filmPresentersArray && filmPresentersArray[this._openedPopupId].isPopupOpened()) {
+          this._popupScrollTop = filmPresentersArray[this._openedPopupId].getScrollTop();
+          filmPresentersArray[this._openedPopupId].closePopup();
         }
         this._clearFilmList();
         this._renderFilmsLists();
         this._restoreScrollTop();
         break;
       case UpdateType.MAJOR:
-        if (this._filmCardPresenters[this._openedPopupId]) {
-          this._filmCardPresenters[this._openedPopupId].closePopup();
+        filmPresentersArray = this._getFilmPresentersArrayForPopup();
+        if (filmPresentersArray && filmPresentersArray[this._openedPopupId].isPopupOpened()) {
+          filmPresentersArray[this._openedPopupId].closePopup();
         }
         this._clearFilmList({resetRenderedFilmCount: true, resetSortType: true});
         this._renderFilmsLists();
@@ -355,8 +391,9 @@ export default class FilmLists {
   }
 
   _restoreScrollTop() {
-    if (this._openedPopupId !== null && this._filmCardPresenters[this._openedPopupId]) {
-      this._filmCardPresenters[this._openedPopupId].setScrollTop(this._popupScrollTop);
+    const filmPresentersArray = this._getFilmPresentersArrayForPopup();
+    if (filmPresentersArray) {
+      filmPresentersArray[this._openedPopupId].setScrollTop(this._popupScrollTop);
     }
   }
 }
