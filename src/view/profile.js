@@ -10,7 +10,7 @@ const createProfileTemplate = (films = []) => {
 </section>`;
 };
 
-const getRankLabel = (watchedCount = 0) => {
+export const getRankLabel = (watchedCount = 0) => {
   if (watchedCount > 1 && watchedCount <= 10) {
     return `novice`;
   } else if (watchedCount > 10 && watchedCount <= 20) {

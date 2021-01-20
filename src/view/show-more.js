@@ -8,6 +8,7 @@ export default class ShowMore extends Abstract {
   constructor() {
     super();
 
+    this._callbacks = [];
     this._clickHandler = this._clickHandler.bind(this);
   }
   getTemplate() {
@@ -16,11 +17,11 @@ export default class ShowMore extends Abstract {
 
   _clickHandler(evt) {
     evt.preventDefault();
-    this._callback.click();
+    this._callbacks.click();
   }
 
   setClickHandler(callback) {
-    this._callback.click = callback;
+    this._callbacks.click = callback;
     this.getElement().addEventListener(`click`, this._clickHandler);
   }
 }
