@@ -1,5 +1,0 @@
-Переписать Popup
-Добавить MostRated и MostCommented
-Добавить ServiceWorker
-
-2.0 Реализуйте вывод даты публикации комментария в человеческом формате (например «now», «a few minutes ago», «8 years ago» и т. д.).

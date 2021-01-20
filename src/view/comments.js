@@ -1,6 +1,9 @@
 import dayjs from "dayjs";
 import he from "he";
 import Smart from "./smart";
+import relativeTime from "dayjs/plugin/relativeTime";
+
+dayjs.extend(relativeTime);
 
 const createCommentsTemplate = ({comments, isDisabled, deletingId}) => {
   const commentReducer = (accumulator, {id, comment, author, date, emotion}) => {
@@ -16,7 +19,7 @@ const createCommentsTemplate = ({comments, isDisabled, deletingId}) => {
           <p class="film-details__comment-text">${he.encode(comment)}</p>
           <p class="film-details__comment-info">
             <span class="film-details__comment-author">${author}</span>
-            <span class="film-details__comment-day">${dayjsDate.format(`DD/MM/YYYY HH:mm`)}</span>
+            <span class="film-details__comment-day">${dayjsDate.fromNow()}</span>
             <button class="film-details__comment-delete" data-comment-id="${id}" ${isDisabled ? disabledStyle : ``}>${buttonText}</button>
           </p>
         </div>
