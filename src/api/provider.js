@@ -55,9 +55,9 @@ export default class Provider {
     return Promise.resolve(film);
   }
 
-  addComment(film) {
+  addComment(comment, id) {
     if (isOnline()) {
-      return this._api.addComment(film)
+      return this._api.addComment(comment, id)
         .then((newFilm) => {
           this._store.setItem(newFilm.id, FilmsModel.adaptToServer(newFilm));
           return newFilm;
@@ -67,10 +67,10 @@ export default class Provider {
     return Promise.reject(new Error(`Add comment failed`));
   }
 
-  deleteComment(film) {
+  deleteComment(id) {
     if (isOnline()) {
-      return this._api.deleteComment(film)
-        .then(() => this._store.removeItem(film.id));
+      return this._api.deleteComment(id)
+        .then(() => this._store.removeItem(id));
     }
 
     return Promise.reject(new Error(`Delete comment failed`));
