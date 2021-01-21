@@ -6,7 +6,7 @@ const createFilmCardTemplate = (film) => {
 
   if (film) {
     const {title, rating, genre, releaseDate, poster, description, comments, duration: {hours, minutes}, isWatched, isFavorite, inWatchlist} = film;
-    let shortDescription = (description.length > 140) ? description.substring(0, 139) + `...` : description;
+    const shortDescription = (description.length > 140) ? description.substring(0, 139) + `...` : description;
     const date = dayjs(releaseDate);
     template = `<article class="film-card">
       <h3 class="film-card__title">${title}</h3>

@@ -221,31 +221,31 @@ export default class filmCard {
 
   _onFavoriteClick() {
     // let obj = {...this._film, isFavorite: !this._film.isFavorite}
-    let obj = Object.assign({}, this._film, {isFavorite: !this._film.isFavorite});
+    const data = Object.assign({}, this._film, {isFavorite: !this._film.isFavorite});
     this._changeData(
         UserAction.UPDATE_FILM,
         UpdateType.MINOR,
-        obj
+        data
     );
   }
 
   _onWatchedClick() {
     // let obj = {...this._film, isWatched: !this._film.isWatched}
-    let obj = Object.assign({}, this._film, {isWatched: !this._film.isWatched});
+    const data = Object.assign({}, this._film, {isWatched: !this._film.isWatched});
     this._changeData(
         UserAction.UPDATE_FILM,
         UpdateType.MINOR,
-        obj
+        data
     );
   }
 
   _onWatchlistClick() {
     // let obj = {...this._film, inWatchlist: !this._film.inWatchlist}
-    let obj = Object.assign({}, this._film, {inWatchlist: !this._film.inWatchlist});
+    const data = Object.assign({}, this._film, {inWatchlist: !this._film.inWatchlist});
     this._changeData(
         UserAction.UPDATE_FILM,
         UpdateType.MINOR,
-        obj
+        data
     );
   }
 
