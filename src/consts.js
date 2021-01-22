@@ -1,6 +1,6 @@
 export const FILMS_PER_PAGE = 5;
-export const FILMS_IN_TOPRATED_LIST = 2;
-export const FILMS_IN_MOSTCOMMENTED_LIST = 2;
+export const FILMS_IN_TOP_RATED_LIST = 2;
+export const FILMS_IN_MOST_COMMENTED_LIST = 2;
 
 export const AUTHORIZATION = `Basic adghj4gui6g`;
 export const END_POINT = `https://13.ecmascript.pages.academy/cinemaddict`;

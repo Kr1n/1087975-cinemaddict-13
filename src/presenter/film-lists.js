@@ -4,7 +4,7 @@ import ShowMore from "../view/show-more";
 import FilmsList from "../view/films-list";
 import FilmCardPresenter, {State as FilmPresenterViewState} from "./film-card";
 import TopRatedFilms from "../view/top-rated-films";
-import {FILMS_IN_TOPRATED_LIST, FILMS_IN_MOSTCOMMENTED_LIST, FILMS_PER_PAGE, SortType, UpdateType, UserAction} from "../consts";
+import {FILMS_IN_TOP_RATED_LIST, FILMS_IN_MOST_COMMENTED_LIST, FILMS_PER_PAGE, SortType, UpdateType, UserAction} from "../consts";
 import MostCommentedFilms from "../view/most-commented-films";
 import EmptyFilmList from "../view/empty-film-list";
 import AllFilms from "../view/all-films";
@@ -98,9 +98,9 @@ export default class FilmLists {
       this._renderTopRated();
       this._renderMostCommented();
 
-      const filmPresentersArray = this._getFilmPresentersArrayForPopup();
-      if (filmPresentersArray) {
-        filmPresentersArray[this._openedPopupId].showPopup();
+      const filmPresentersList = this._getFilmPresentersListForPopup();
+      if (filmPresentersList) {
+        filmPresentersList[this._openedPopupId].showPopup();
       }
 
     } else {
@@ -194,7 +194,7 @@ export default class FilmLists {
     allFilms
       .slice()
       .sort(sortForTopRated)
-      .slice(0, FILMS_IN_TOPRATED_LIST)
+      .slice(0, FILMS_IN_TOP_RATED_LIST)
       .forEach((film) => {
         this._renderFilmCard(film, container, this._topRatedCardPresenters);
       });
@@ -209,7 +209,7 @@ export default class FilmLists {
     allFilms
       .slice()
       .sort(sortForMostCommented)
-      .slice(0, FILMS_IN_MOSTCOMMENTED_LIST)
+      .slice(0, FILMS_IN_MOST_COMMENTED_LIST)
       .forEach((film) => {
         this._renderFilmCard(film, container, this._mostCommentedCardPresenters);
       });
@@ -230,11 +230,11 @@ export default class FilmLists {
     render(this._filmsList, this._showMoreButtonComponent, RenderPosition.BEFOREEND);
   }
 
-  _renderFilmCard(film, container, filmArray) {
+  _renderFilmCard(film, container, filmPresentersList) {
     const filmCardPresenter = new FilmCardPresenter(container, this._handleViewAction, this._requestComments, this._popupOpenHandler, this._popupCloseHandler);
 
     filmCardPresenter.init(film);
-    filmArray[film.id] = filmCardPresenter;
+    filmPresentersList[film.id] = filmCardPresenter;
   }
 
   _onShowMoreBtnClick() {
@@ -283,10 +283,10 @@ export default class FilmLists {
   }
 
   _requestComments(filmId) {
-    const filmPresentersArray = this._getFilmPresentersArrayForPopup();
+    const filmPresentersList = this._getFilmPresentersListForPopup();
     this._api.getComments(filmId)
       .then((response) => this._commentsModel.setComments(UpdateType.PATCH, {comments: response, id: filmId}))
-      .catch(() => filmPresentersArray[filmId].setViewState(FilmPresenterViewState.ABORTING));
+      .catch(() => filmPresentersList[filmId].setViewState(FilmPresenterViewState.ABORTING));
   }
 
   show() {
@@ -310,32 +310,32 @@ export default class FilmLists {
   }
 
   _handleViewAction(actionType, updateType, update) {
-    const filmPresentersArray = this._getFilmPresentersArrayForPopup();
+    const filmPresentersList = this._getFilmPresentersListForPopup();
     switch (actionType) {
       case UserAction.UPDATE_FILM:
         this._api.updateFilm(update)
           .then((response) => this._filmsModel.updateFilm(updateType, response))
-          .catch(() => filmPresentersArray[update.id].setViewState(FilmPresenterViewState.ABORTING));
+          .catch(() => filmPresentersList[update.id].setViewState(FilmPresenterViewState.ABORTING));
         break;
 
       case UserAction.ADD_COMMENT:
-        filmPresentersArray[update.id].setViewState(FilmPresenterViewState.ADDING);
+        filmPresentersList[update.id].setViewState(FilmPresenterViewState.ADDING);
         this._api.addComment(update.comment, update.id)
           .then((response) => this._filmsModel.updateFilm(updateType, response))
-          .catch(() => filmPresentersArray[update.id].setViewState(FilmPresenterViewState.ABORTING));
+          .catch(() => filmPresentersList[update.id].setViewState(FilmPresenterViewState.ABORTING));
         break;
 
       case UserAction.DELETE_COMMENT:
-        filmPresentersArray[update.id].setViewState(FilmPresenterViewState.DELETING, update.id);
+        filmPresentersList[update.id].setViewState(FilmPresenterViewState.DELETING, update.id);
         this._api.deleteComment(update.comment.id)
           .then(() => this._api.getFilms())
           .then((response) => this._filmsModel.setFilms(UpdateType.MINOR, response))
-          .catch(() => filmPresentersArray[update.id].setViewState(FilmPresenterViewState.ABORTING));
+          .catch(() => filmPresentersList[update.id].setViewState(FilmPresenterViewState.ABORTING));
         break;
     }
   }
 
-  _getFilmPresentersArrayForPopup() {
+  _getFilmPresentersListForPopup() {
     if (this._filmCardPresenters[this._openedPopupId]) {
       return this._filmCardPresenters;
     }
@@ -351,33 +351,33 @@ export default class FilmLists {
   }
 
   _handleModelEvent(updateType, data) {
-    let filmPresentersArray = null;
+    let filmPresentersList = null;
     switch (updateType) {
       case UpdateType.PATCH:
-        filmPresentersArray = this._getFilmPresentersArrayForPopup();
-        if (filmPresentersArray && filmPresentersArray[this._openedPopupId].isPopupOpened()) {
-          this._popupScrollTop = filmPresentersArray[this._openedPopupId].getScrollTop();
-          const film = filmPresentersArray[data.id].getFilm();
-          filmPresentersArray[data.id].init(film, this._getComments());
+        filmPresentersList = this._getFilmPresentersListForPopup();
+        if (filmPresentersList && filmPresentersList[this._openedPopupId].isPopupOpened()) {
+          this._popupScrollTop = filmPresentersList[this._openedPopupId].getScrollTop();
+          const film = filmPresentersList[data.id].getFilm();
+          filmPresentersList[data.id].init(film, this._getComments());
         }
 
         this._restoreScrollTop();
 
         break;
       case UpdateType.MINOR:
-        filmPresentersArray = this._getFilmPresentersArrayForPopup();
-        if (filmPresentersArray && filmPresentersArray[this._openedPopupId].isPopupOpened()) {
-          this._popupScrollTop = filmPresentersArray[this._openedPopupId].getScrollTop();
-          filmPresentersArray[this._openedPopupId].closePopup();
+        filmPresentersList = this._getFilmPresentersListForPopup();
+        if (filmPresentersList && filmPresentersList[this._openedPopupId].isPopupOpened()) {
+          this._popupScrollTop = filmPresentersList[this._openedPopupId].getScrollTop();
+          filmPresentersList[this._openedPopupId].closePopup();
         }
         this._clearFilmList();
         this._renderFilmsLists();
         this._restoreScrollTop();
         break;
       case UpdateType.MAJOR:
-        filmPresentersArray = this._getFilmPresentersArrayForPopup();
-        if (filmPresentersArray && filmPresentersArray[this._openedPopupId].isPopupOpened()) {
-          filmPresentersArray[this._openedPopupId].closePopup();
+        filmPresentersList = this._getFilmPresentersListForPopup();
+        if (filmPresentersList && filmPresentersList[this._openedPopupId].isPopupOpened()) {
+          filmPresentersList[this._openedPopupId].closePopup();
         }
         this._clearFilmList({resetRenderedFilmCount: true, resetSortType: true});
         this._renderFilmsLists();
@@ -391,9 +391,9 @@ export default class FilmLists {
   }
 
   _restoreScrollTop() {
-    const filmPresentersArray = this._getFilmPresentersArrayForPopup();
-    if (filmPresentersArray) {
-      filmPresentersArray[this._openedPopupId].setScrollTop(this._popupScrollTop);
+    const filmPresentersList = this._getFilmPresentersListForPopup();
+    if (filmPresentersList) {
+      filmPresentersList[this._openedPopupId].setScrollTop(this._popupScrollTop);
     }
   }
 }
